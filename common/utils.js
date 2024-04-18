@@ -19,10 +19,19 @@ export const generateJwtToken = async(result)=>{
     const payload = {
         id: result.Id,
         email: result.emailId,
-        role: result.roleId,
+        role: result.Role,
         isDeleted: result.isDeleted
     }
     const options = {expiresIn:"1h"}
      return jsonwebtoken.sign(payload, secretKey,options)
 }
 
+export const verifyToken = (token)=>{
+    try{
+        const decoded =  jsonwebtoken.verify(token,secretKey)
+        return { success: true, data: decoded };
+    }
+    catch(err){
+        return { success: false, message: err.message };
+    }
+}

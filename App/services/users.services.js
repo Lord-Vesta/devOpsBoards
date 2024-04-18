@@ -2,29 +2,53 @@ import { db } from "../../connection.js";
 
 export const checkAlreadyPresent = (emailId, callback) => {
     db.query(
-      "Select * from UserTable where emailId = ? and isDeleted = false; ",
+      "Select emailId,isDeleted,Id from UserTable where emailId = ? and isDeleted = false; ",
       [emailId],
       async (err, result) => {
         if (err) {
             // console.log(err);
-          callback({ error: "Database error" });
+            callback(err);
         } else {
             // console.log(result);
-          return callback(result);
+          return callback(null,result);
         }
       }
     );
   };
 
-export const signup = (emailId, password, roleId, isdeleted, callback) => {
+export const login = (emailId, callback)=>{
+  // console.log(typeof emailId);
+  db.query(`SELECT u.emailId,u.password, u.Id,u.isDeleted, r.Role
+  FROM UserTable u
+  JOIN rolesForUsers ru ON u.Id = ru.userId
+  JOIN Roles r ON ru.RoleId = r.Id
+  WHERE u.emailId = ? AND u.isDeleted = false`,[emailId],async function(err,result){
+    if(err){
+      callback(err)
+    }
+    else{
+      return callback(null,result)
+    }
+  })
+}
+
+export const signup = (emailId, password, isdeleted, callback) => {
   db.query(
-    `insert into UserTable (emailId,password,roleId,isDeleted) values (?,?,?,?)`,
-    [emailId, password, roleId, isdeleted],
-    async (err, result) => {
+    `insert into UserTable (emailId,password,isDeleted) values (?,?,?)`,
+    [emailId, password, isdeleted],
+    async (err, userResult) => {
       if (err) {
-        callback({ error: "Database error" });
+        callback(err);
       } else {
-        return callback(result);
+        const userId = userResult.insertId;
+        db.query(`insert into rolesForUsers(userId,roleId) values (?,?)`,[userId,1],(err, roleResult) => {
+          if(err){
+            callback(err)
+          }
+          else{
+            return callback(null, { userResult, roleResult });
+          }
+        })
       }
     }
   );
