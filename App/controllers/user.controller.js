@@ -3,57 +3,72 @@ import {
   passwordComparing,
   passwordHashing,
 } from "../../common/utils.js";
-import { checkAlreadyPresent, signup,login } from "../services/users.services.js";
+import user from "../services/users.services.js";
 
-export const signupUser = (req, res) => {
+export const signupUser = async (req, res) => {
   try {
     const isdeleted = false;
     const {
       body: { emailId, password },
     } = req;
-    checkAlreadyPresent(emailId, async function (err,result) {
-      if(err){
-        res.status(500).json({
-          status: 500,
-          error: "Database error",
-          message: err.message,
-        });
-      }
-      else if(result){
-        if (result.length) {
-          res.status(409).json({
-            status: 409,
-            error: "Email already exists",
-            message:
-              "The email address provided is already registered. Please use a different email or proceed to login.",
-          });
-        } else {
-          const encPassword = await passwordHashing(password);
-          signup(
-            emailId,
-            encPassword,
-            isdeleted,
-            async function (err,result) {
-              console.log(result);
-              if (result) {
-                res.status(201).json({
-                  status: 201,
-                  message: "User has been successfully registered",
-                });
-              }
-              else if(err){
-                res.status(500).json({
-                  status: 500,
-                  error: "Database error",
-                  message: err.message,
-                });
-              }
-            }
-          );
-        }
-      }
-      
-    });
+    const emailAlreadyPresent = await user.checkAlreadyPresent(emailId)
+    // 
+    
+    console.log(emailAlreadyPresent.result.length);
+    if(emailAlreadyPresent.result.length){
+      res.status(409).json({
+        status: 409,
+        error: "Email already exists",
+        message:
+          "The email address provided is already registered. Please use a different email or proceed to login.",
+      });
+    }
+    else{
+      const encPassword = await passwordHashing(password);
+      const signupUser = await user.signup(emailId,encPassword,isdeleted)
+       
+    }
+    // console.log(signupUser);
+      // if(err){
+      //   res.status(500).json({
+      //     status: 500,
+      //     error: "Database error",
+      //     message: err.message,
+      //   });
+      // }
+      // else if(result){
+      //   if (result.length) {
+      //     res.status(409).json({
+      //       status: 409,
+      //       error: "Email already exists",
+      //       message:
+      //         "The email address provided is already registered. Please use a different email or proceed to login.",
+      //     });
+      //   } else {
+      //     const encPassword = await passwordHashing(password);
+      //     signup(
+      //       emailId,
+      //       encPassword,
+      //       isdeleted,
+      //       async function (err,result) {
+      //         console.log(result);
+      //         if (result) {
+      //           res.status(201).json({
+      //             status: 201,
+      //             message: "User has been successfully registered",
+      //           });
+      //         }
+      //         else if(err){
+      //           res.status(500).json({
+      //             status: 500,
+      //             error: "Database error",
+      //             message: err.message,
+      //           });
+      //         }
+      //       }
+      //     );
+      //   }
+      // }
   } catch (err) {
     res.status(500).json({
       status: 500,
