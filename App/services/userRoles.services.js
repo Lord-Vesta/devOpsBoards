@@ -48,9 +48,29 @@ const getUsers = async (Id) => {
   }
 };
 
+const roleForUserExits = async(userId,roleId)=>{
+  try{
+    const [result] = await db.promise().query(`select Id from RolesForUsers where userId = ? and roleId = ? and isDeleted = false`,[userId,roleId]);
+    return {error:null, result: result};
+  }catch(error){
+    return {error:error}
+  }
+}
+
+const deleteRoleofUser = async(userId,roleId)=>{
+  try{
+    const [result] = await db.promise().query(`update RolesForUsers set isDeleted = true where userId = ? and roleId = ?`,[userId,roleId])
+    return{error:null, result: result};
+  }catch(error){
+    return {error:error}
+  }
+}
+
 export default {
   getRolesOfUser,
   getUsers,
   checkRoleExists,
-  addRolesToUsers
+  addRolesToUsers,
+  roleForUserExits,
+  deleteRoleofUser
 };

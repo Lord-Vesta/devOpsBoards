@@ -5,4 +5,5 @@ export const router = express.Router();
 
 router.get('/:UserId/roles',userRoleControllers.getRolesOfUser)
 router.post('/:userId/roles/:roleId',userRoleControllers.addRolesToUsers)
+router.delete('/:userId/roles/:roleId',userRoleControllers.deleteRoleofUser)
 
