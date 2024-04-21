@@ -1,7 +1,8 @@
 import express from 'express';
-import { getRolesOfUser } from '../controllers/userRoles.controllers.js';
+import userRoleControllers from '../controllers/userRoles.controllers.js';
 
 export const router = express.Router();
 
-router.get('/:UserId/roles',getRolesOfUser)
+router.get('/:UserId/roles',userRoleControllers.getRolesOfUser)
+router.post('/:userId/roles/:roleId',userRoleControllers.addRolesToUsers)
 

@@ -1,129 +1,20 @@
-import { verifyToken } from "../../common/utils.js";
-import {
-  addRole,
-  getRoles,
-  getSpecificRole,
-  existingRoles,
-  editRole,
-  removeRole,
-} from "../services/roles.services.js";
+import roles from "../services/roles.services.js";
 
-export const listRoles = (req, res) => {
+export const listRoles = async (req, res) => {
   try {
-    getRoles(async function (result) {
-      if (result.length) {
-        res.status(201).json({
-          status: 201,
-          message: "data is fetched successfully",
-          data: result,
-        });
-      } else {
-        res.status(200).json({
-          status: 200,
-          data: result,
-        });
-      }
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 500,
-      error: "server error",
-      message: err.message,
-    });
-  }
-};
-
-export const specificRole = (req, res) => {
-  try {
-    const roleId = req.params.roleId;
-    getSpecificRole(roleId, async function (result) {
-      if (result.length) {
-        res.status(201).json({
-          status: 201,
-          message: "data is fetched successfully",
-          data: result,
-        });
-      } else {
-        res.status(204).json({
-          status: 204,
-          data: result,
-        });
-      }
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 500,
-      error: "server error",
-      message: err.message,
-    });
-  }
-};
-
-export const insertRoles = (req, res) => {
-  try {
-    const {
-      body: { Role },
-    } = req;
-    console.log("inside insertRoles");
-    const isDeleted = false;
-    existingRoles(Role, async function (result) {
-      console.log("inisde existing roles");
-      if (result.length) {
-        res.status(200).json({
-          status: 200,
-          message: "role already exists",
-          data: result,
-        });
-      } else {
-        addRole(Role, isDeleted, async function (result) {
-          if (result) {
-            res.status(200).json({
-              status: 200,
-              message: "Role is successfully added",
-              data: result,
-            });
-          }
-        });
-      }
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 500,
-      error: "server error",
-      message: err.message,
-    });
-  }
-};
-
-export const UpdateRole = (req, res) => {
-  try {
-    const { role } = req.body;
-    console.log(role);
-    const Id = req.params.roleId;
-
-    if (Id == 1 || Id == 2) {
-      res.status(403).json({
-        status: 403,
-        message: "You are not allowed to update this role",
+    const result = await roles.getRoles();
+    console.log(result);
+    if (result.error) {
+      res.status(500).json({
+        status: 500,
+        error: "Database error",
+        message: result.error.message,
       });
-    } else {
-      getSpecificRole(Id, async function (result) {
-        if (result.length) {
-          editRole(Id, role, async function (result) {
-            if (result) {
-              res.status(200).json({
-                status: 200,
-                message: "data is successfully updated",
-                data: result,
-              });
-            }
-          });
-        } else {
-          res.status(404).json({
-            status: 404,
-            message: "role not found",
-          });
-        }
+    } else if (result.result.length) {
+      res.status(201).json({
+        status: 201,
+        message: "data is fetched successfully",
+        data: result.result,
       });
     }
   } catch (err) {
@@ -135,31 +26,135 @@ export const UpdateRole = (req, res) => {
   }
 };
 
-// export const updateRoleUser = (req, res) => {
-//   try {
-//     const { role } = req.body;
-//     const authHeader = req.headers["authorization"];
-//     const decoded = verifyToken(authHeader);
-//     const Id = decoded.data.id;
-//     editRole(Id, role, async function (result) {
-//       if (result) {
-//         res.status(200).json({
-//           status: 200,
-//           message: "data is successfully updated",
-//           data: result,
-//         });
-//       }
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       status: 500,
-//       error: "server error",
-//       message: err.message,
-//     });
-//   }
-// };
+export const specificRole = async (req, res) => {
+  try {
+    const roleId = req.params.roleId;
+    const result = await roles.getSpecificRole(roleId);
+    if (result.error) {
+      res.status(500).json({
+        status: 500,
+        error: "Database error",
+        message: result.error.message,
+      });
+    } else if (result.result.length) {
+      res.status(201).json({
+        status: 201,
+        message: "data is fetched successfully",
+        data: result.result,
+      });
+    } else if (!result.result.length) {
+      res.status(204).json({
+        status: 204,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      error: "server error",
+      message: error.message,
+    });
+  }
+};
 
-export const deleteRole = (req, res) => {
+export const insertRoles = async (req, res) => {
+  try {
+    const {
+      body: { Role },
+    } = req;
+    console.log("inside insertRoles");
+    const isDeleted = false;
+    const roleExists = await roles.existingRoles(Role);
+    // console.log(roleExists);
+    if (roleExists.error) {
+      res.status(500).json({
+        status: 500,
+        error: "Database error",
+        message: roleExists.error.message,
+      });
+    } else if (roleExists.result.length) {
+      res.status(200).json({
+        status: 200,
+        message: "role already exists",
+        data: roleExists.result,
+      });
+    } else {
+      const insertRole = await roles.addRole(Role, isDeleted);
+      if (insertRole.error) {
+        res.status(500).json({
+          status: 500,
+          error: "Database error",
+          message: insertRole.error.message,
+        });
+      } else if (insertRole.result.affectedRows) {
+        console.log("added");
+        res.status(200).json({
+          status: 200,
+          message: "Role is successfully added",
+          data: insertRole.result,
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      error: "server error",
+      message: error.message,
+    });
+  }
+};
+
+export const updateRole = async (req, res) => {
+  try {
+    const { Role } = req.body;
+    const Id = req.params.roleId;
+
+    if (Id == 1 || Id == 2) {
+      res.status(403).json({
+        status: 403,
+        message: "You are not allowed to update this role",
+      });
+    } else {
+      const roleOfUser = await roles.getSpecificRole(Id);
+      if (roleOfUser.error) {
+        res.status(500).json({
+          status: 500,
+          error: "Database error",
+          message: roleOfUser.error.message,
+        });
+      } else if (roleOfUser.result.length) {
+        const edittedRole = await roles.editRole(Id, Role);
+        if (edittedRole.error) {
+          res.status(500).json({
+            status: 500,
+            error: "Database error",
+            message: edittedRole.error.message,
+          });
+        } else if (edittedRole.result.affectedRows) {
+          res.status(200).json({
+            status: 200,
+            message: "data is successfully updated",
+            data: edittedRole.result,
+          });
+        }
+      } else if (!roleOfUser.result.length) {
+        res.status(404).json({
+          status: 404,
+          message: "role not found",
+        });
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: 500,
+      error: "server error",
+      message: err.message,
+    });
+  }
+};
+
+export const deleteRole = async (req, res) => {
   try {
     const Id = req.params.roleId;
 
@@ -169,28 +164,34 @@ export const deleteRole = (req, res) => {
         message: "You are not allowed to delete this role",
       });
     } else {
-      removeRole(Id, async function (err,result) {
-        if (err) {
-          res.status(200).json({
-            status: 200,
-            message: "Database Error",
-            error: err.message,
-          });
-        }
-        else{
-          res.status(200).json({
-            status: 200,
-            message: "data is successfully deleted",
-            data: result,
-          });
-        }
-      });
+      const result = await roles.removeRole(Id);
+      console.log(result);
+      if (result.error) {
+        res.status(500).json({
+          status: 500,
+          error: "Role not found or not updated",
+        });
+      } else if (result.result.affectedRows) {
+        res.status(200).json({
+          status: 200,
+          message: "data is successfully deleted",
+          data: result.result,
+        });
+      }
     }
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({
       status: 500,
       error: "server error",
-      message: err.message,
+      message: error.message,
     });
   }
+};
+
+export default {
+  listRoles,
+  specificRole,
+  insertRoles,
+  updateRole,
+  deleteRole,
 };

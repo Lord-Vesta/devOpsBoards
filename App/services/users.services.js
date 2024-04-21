@@ -1,57 +1,66 @@
 import { db } from "../../connection.js";
 
-export const checkAlreadyPresent = (emailId, callback) => {
-    db.query(
-      "Select emailId,isDeleted,Id from UserTable where emailId = ? and isDeleted = false; ",
-      [emailId],
-      async (err, result) => {
-        if (err) {
-            // console.log(err);
-            callback(err);
-        } else {
-            // console.log(result);
-          return callback(null,result);
-        }
-      }
-    );
-  };
-
-export const login = (emailId, callback)=>{
-  // console.log(typeof emailId);
-  db.query(`SELECT u.emailId,u.password, u.Id,u.isDeleted, r.Role
-  FROM UserTable u
-  JOIN rolesForUsers ru ON u.Id = ru.userId
-  JOIN Roles r ON ru.RoleId = r.Id
-  WHERE u.emailId = ? AND u.isDeleted = false`,[emailId],async function(err,result){
-    if(err){
-      callback(err)
-    }
-    else{
-      return callback(null,result)
-    }
-  })
-}
-
-export const signup = (emailId, password, isdeleted, callback) => {
-  db.query(
-    `insert into UserTable (emailId,password,isDeleted) values (?,?,?)`,
-    [emailId, password, isdeleted],
-    async (err, userResult) => {
-      if (err) {
-        callback(err);
-      } else {
-        const userId = userResult.insertId;
-        db.query(`insert into rolesForUsers(userId,roleId) values (?,?)`,[userId,1],(err, roleResult) => {
-          if(err){
-            callback(err)
-          }
-          else{
-            return callback(null, { userResult, roleResult });
-          }
-        })
-      }
-    }
-  );
+const checkAlreadyPresent = async (emailId) => {
+  try {
+    const [result] = await db
+      .promise()
+      .query(
+        "Select emailID,isDeleted,Id from UserTable where emailId = ? and isDeleted = false",
+        [emailId]
+      );
+    return { error: null, result: result };
+  } catch (error) {
+    console.error("Error during checkAlreadyPresent:", error);
+    return {error:error};
+  }
 };
 
+const login = async (emailId) => {
+  console.log(emailId);
+  try {
+    const [result] = await db.promise().query(
+      `SELECT u.emailID,u.password, u.Id,u.isDeleted, r.Role
+      FROM UserTable u
+      JOIN rolesForUsers ru ON u.Id = ru.userId
+      JOIN Roles r ON ru.RoleId = r.Id
+      WHERE u.emailId = ? AND u.isDeleted = false`,
+      [emailId]
+    );
+    return { error: null, result: result };
+  } catch (error) {
+    console.error("Error during login:", error);
+    return {error:error};
+  }
+};
 
+const signup = async (emailId, password, isdeleted) => {
+  try {
+    const [userResult] = await db
+      .promise()
+      .query(
+        `insert into UserTable (emailID,password,isDeleted) values (?,?,?)`,
+        [emailId, password, isdeleted]
+      );
+    if (userResult.affectedRows) {
+      const userId = userResult.insertId;
+      const [roleResult] = await db
+        .promise()
+        .query(
+          `insert into rolesForUsers(userID,roleId,isDeleted) values (?,?,?)`,
+          [userId, 1, false]
+        );
+        if(roleResult.affectedRows) {     
+            return { error: null, result: userResult, roleResult };
+        }
+      }
+  } catch (error) {
+    console.error("Error during signup:", error);
+    return {error:error};
+  }
+};
+
+export default {
+  checkAlreadyPresent,
+  login,
+  signup,
+};
