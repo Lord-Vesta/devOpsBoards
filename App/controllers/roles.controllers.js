@@ -11,10 +11,15 @@ export const listRoles = async (req, res) => {
         message: result.error.message,
       });
     } else if (result.result.length) {
-      res.status(201).json({
-        status: 201,
+      res.status(200).json({
+        status: 200,
         message: "data is fetched successfully",
         data: result.result,
+      });
+    }
+    else if(!result.result.length){
+      res.status(204).json({
+        status: 204,
       });
     }
   } catch (err) {
@@ -37,8 +42,8 @@ export const specificRole = async (req, res) => {
         message: result.error.message,
       });
     } else if (result.result.length) {
-      res.status(201).json({
-        status: 201,
+      res.status(200).json({
+        status: 200,
         message: "data is fetched successfully",
         data: result.result,
       });
@@ -72,10 +77,10 @@ export const insertRoles = async (req, res) => {
         message: roleExists.error.message,
       });
     } else if (roleExists.result.length) {
-      res.status(200).json({
-        status: 200,
+      res.status(409).json({
+        status: 409,
         message: "role already exists",
-        data: roleExists.result,
+        error:"requested role already exists"
       });
     } else {
       const insertRole = await roles.addRole(Role, isDeleted);
@@ -87,8 +92,8 @@ export const insertRoles = async (req, res) => {
         });
       } else if (insertRole.result.affectedRows) {
         console.log("added");
-        res.status(200).json({
-          status: 200,
+        res.status(201).json({
+          status: 201,
           message: "Role is successfully added",
           data: insertRole.result,
         });
@@ -138,8 +143,8 @@ export const updateRole = async (req, res) => {
           });
         }
       } else if (!roleOfUser.result.length) {
-        res.status(404).json({
-          status: 404,
+        res.status(409).json({
+          status: 409,
           message: "role not found",
         });
       }

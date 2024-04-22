@@ -21,8 +21,8 @@ import UserRoles from "../services/userRoles.services.js";
       });
     }
     else if(!checkUserExists.result.length){
-      res.status(201).json({
-        status: 201,
+      res.status(204).json({
+        status: 204,
         message: "User doesnot exists",
         data: [],
       });
@@ -45,15 +45,15 @@ import UserRoles from "../services/userRoles.services.js";
     // console.log(checkRoleExists.result.length);
     // console.log(checkUserExits.result.length)
     if(!checkUserExits.result.length){
-      res.status(201).json({
-        status: 201,
+      res.status(204).json({
+        status: 204,
         message: "User doesnot exists",
         data: [],
       });
     }
     else if(!checkRoleExists.result.length){
-      res.status(201).json({
-        status: 201,
+      res.status(204).json({
+        status: 204,
         message: "Role doesnot exists",
         data: [],
       });
@@ -61,8 +61,8 @@ import UserRoles from "../services/userRoles.services.js";
     else if(checkUserExits.result.length && checkRoleExists.result.length){
       const roleForUserExists = await UserRoles.roleForUserExits(userId, roleId)
       if(roleForUserExists.result.length){
-        res.status(201).json({
-          status: 201,
+        res.status(200).json({
+          status: 200,
           message: "User already has this role",
           data: [],
         });
@@ -121,8 +121,8 @@ const deleteRoleofUser = async(req,res)=>{
             });
     }
     else if(roleOfUserDeleted.result.affectedRows){
-      res.status(201).json({
-        status: 201,
+      res.status(200).json({
+        status: 200,
         message: "data is deleted successfully",
         data: roleOfUserDeleted.result,
       })
@@ -130,8 +130,8 @@ const deleteRoleofUser = async(req,res)=>{
 
   }
   else if(!roleForUserExists.result.length){
-    res.status(201).json({
-      status: 201,
+    res.status(204).json({
+      status: 204,
       message: "role for user doesnot exists",
       data: [],
     });
