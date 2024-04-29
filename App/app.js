@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 
-import { router as roleRoutes } from "./routes/roles.routes.js";
+import { roleRouter } from "./routes/roles.routes.js";
 import {router as userRoutes} from "./routes/user.routes.js";
 import {router as userRoleRoutes} from "./routes/userRole.routes.js";
 import {router as permissionRoutes} from './routes/permission.routes.js'
@@ -13,16 +14,24 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(helmet());
 
+const routes = [
+    { path: '/api/user', router: userRoutes },
+    { path: '/api/roles', router: roleRouter },
+    { path: '/api/users', router: userRoleRoutes },
+    { path: '/api/permissions', router: permissionRoutes },
+    { path: '/api/boards', router: attachmentRoutes },
+    { path: '/api/rolePermissions', router: rolePermissions }
+  ];
+  
+routes.forEach(route => {
+console.log("inside for each");
+app.use(route.path, route.router);
+});
 
-app.use('/api/user',userRoutes);
-app.use("/api/roles", roleRoutes);
-app.use('/api/users',userRoleRoutes);
-app.use("/api/boards", boardsRoutes)
-app.use('/api/permissions',permissionRoutes)
-app.use('/api/boards',attachmentRoutes)
-app.use('/api/rolePermissions',rolePermissions);
-
-
-
+app.use((err,req,res,next)=>{
+  res.status(err.statusCode || 500).send(err)
+})
+  
 export default app;

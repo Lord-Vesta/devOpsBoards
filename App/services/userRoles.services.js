@@ -2,6 +2,7 @@ import { db } from "../../connection.js";
 
 const getRolesOfUser = async (Id) => {
   try {
+    
     const [result] = await db.promise().query(
       `select r.Role
             from Roles r
@@ -9,7 +10,10 @@ const getRolesOfUser = async (Id) => {
            where ru.userId = ? and ru.isdeleted = false;`,
       [Id]
     );
-    return { error: null, result: result };
+
+    const rolesArr = result.map(element => element.Role);
+
+    return { error: null, result: rolesArr };
   } catch (error) {
     return { error: error };
   }
@@ -59,7 +63,16 @@ const roleForUserExits = async(userId,roleId)=>{
 
 const deleteRoleofUser = async(userId,roleId)=>{
   try{
-    const [result] = await db.promise().query(`update RolesForUsers set isDeleted = true where userId = ? and roleId = ?`,[userId,roleId])
+    const [result] = await db.promise().query(`update RolesForUsers set isDeleted = false where userId = ? and roleId = ?`,[userId,roleId])
+    return{error:null, result: result};
+  }catch(error){
+    return {error:error}
+  }
+}
+
+const getRoleIdFromRole = async(role)=>{
+  try{
+    const [result] = await db.promise().query(`select Id from Roles where Role = ? and isDeleted = false`,[role]);
     return{error:null, result: result};
   }catch(error){
     return {error:error}
@@ -72,5 +85,6 @@ export default {
   checkRoleExists,
   addRolesToUsers,
   roleForUserExits,
-  deleteRoleofUser
+  deleteRoleofUser,
+  getRoleIdFromRole
 };

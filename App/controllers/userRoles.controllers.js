@@ -1,4 +1,5 @@
 import UserRoles from "../services/userRoles.services.js";
+import permissionForRoles from '../services/permissionForRoles.services.js'
 
  const getRolesOfUser = async (req, res) => {
   try {
@@ -42,8 +43,6 @@ import UserRoles from "../services/userRoles.services.js";
     const roleId = req.params.roleId;
     const checkUserExits = await UserRoles.getUsers(userId)
     const checkRoleExists = await UserRoles.checkRoleExists(roleId)
-    // console.log(checkRoleExists.result.length);
-    // console.log(checkUserExits.result.length)
     if(!checkUserExits.result.length){
       res.status(204).json({
         status: 204,
@@ -58,8 +57,35 @@ import UserRoles from "../services/userRoles.services.js";
         data: [],
       });
     }
-    else if(checkUserExits.result.length && checkRoleExists.result.length){
+    if(checkUserExits.result.length && checkRoleExists.result.length){
+
+      const roleOfuser = await UserRoles.getRolesOfUser(userId)
+
+      const rolepermission = await permissionForRoles.getPermissionForRoles(roleId)
+      roleOfuser.result.forEach(e=>{
+        console.log(e.Role);
+      })
+      console.log(rolepermission.result);
+      // console.log(roleForUsers);
+
+      let roleWithMaxPermissions = null;
+      let maxPermissionsCount = -1;
+      
+
+    // console.log(rolesWithPermissions.result);
+
+    // rolesWithPermissions.result.forEach(role => {
+    //   const permissionsCount = role.permission.length;
+    //   if (permissionsCount > maxPermissionsCount) {
+    //     maxPermissionsCount = permissionsCount;
+    //     roleWithMaxPermissions = role;
+    //   }
+    // });
+
+    // console.log(roleWithMaxPermissions);
+
       const roleForUserExists = await UserRoles.roleForUserExits(userId, roleId)
+      // console.log(roleForUserExists);
       if(roleForUserExists.result.length){
         res.status(200).json({
           status: 200,
@@ -68,6 +94,19 @@ import UserRoles from "../services/userRoles.services.js";
         });
       }
       else if(!roleForUserExists.result.length){
+        // const getRoleOfUser = await UserRoles.getRolesOfUser(userId)
+
+        // // console.log(getRoleOfUser.result[0].Role);
+        
+        // const getRoleIdOfRole = await UserRoles.getRoleIdFromRole(getRoleOfUser.result[0].Role)
+
+        // // console.log(getRoleIdOfRole.result[0].Id);
+
+        // const deleteRoleOfUser = await UserRoles.deleteRoleofUser(userId,getRoleIdOfRole.result[0].Id)
+
+        // console.log(deleteRoleOfUser.result);
+
+
         const roleAddedToUser = await UserRoles.addRolesToUsers(userId,roleId)
         if(roleAddedToUser.error){
           res.status(500).json({
