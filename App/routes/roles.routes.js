@@ -5,16 +5,18 @@ import rolesRoutes from '../controllers/roles.controllers.js';
 import { authenticateJwtToken } from '../../Middlewares/jwtAuthMiddleware.js';
 import rolesMiddleware from '../../Middlewares/roles.middleware.js';
 
+const combination = ['user','admin']
+const admin = ['admin'] 
+const user = ['user']
 
+export const roleRouter = express.Router();
 
-export const router = express.Router();
+roleRouter.get('/',authenticateJwtToken,rolesMiddleware.authorize(['user','admin']),rolesRoutes.listRoles)
 
-router.get('/',authenticateJwtToken,rolesMiddleware.authorize(['admin']),rolesRoutes.listRoles)
+roleRouter.get('/:roleId',authenticateJwtToken,rolesMiddleware.authorize(['user','admin']),rolesRoutes.specificRole)
 
-router.get('/:roleId',authenticateJwtToken,rolesMiddleware.authorize(['admin']),rolesRoutes.specificRole)
+roleRouter.post('/',rolesValidator.insertRoles,rolesMiddleware.authorize(['user','admin']),authenticateJwtToken,rolesRoutes.insertRoles)
 
-router.post('/',rolesValidator.insertRoles,rolesMiddleware.authorize(['admin']),authenticateJwtToken,rolesRoutes.insertRoles)
-
-router.put('/:roleId',rolesValidator.updateRoles,authenticateJwtToken,rolesMiddleware.authorize(['admin']),rolesRoutes.updateRole)
-// router.put('/user',authenticateJwtToken,updateRoleUser)
-router.delete('/:roleId',authenticateJwtToken,rolesMiddleware.authorize(['admin']),rolesRoutes.deleteRole)
+roleRouter.put('/:roleId',rolesValidator.updateRoles,authenticateJwtToken,rolesMiddleware.authorize(['user','admin']),rolesRoutes.updateRole)
+// roleRouter.put('/user',authenticateJwtToken,updateRoleUser)
+roleRouter.delete('/:roleId',authenticateJwtToken,rolesMiddleware.authorize(['user','admin']),rolesRoutes.deleteRole)

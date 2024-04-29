@@ -4,49 +4,34 @@ import {
   passwordHashing,
 } from "../../common/utils.js";
 import user from "../services/users.services.js";
+import { newMessage } from "../messages/user.messages.js";
+import { responseHandler } from "../../common/handlers.js";
+
+const { conflict_message, user_signup, login_successfull,unauthorized } = newMessage;
 
 const signupUser = async (req, res) => {
   try {
+    console.log("inside signup try");
     const isdeleted = false;
     const {
       body: { emailId, password },
     } = req;
     const emailAlreadyPresent = await user.checkAlreadyPresent(emailId);
-    if (emailAlreadyPresent.error) {
-      res.status(500).json({
-        status: 500,
-        error: "Database error",
-        message: emailAlreadyPresent.error.message,
-      });
-    } else if (emailAlreadyPresent.result.length) {
-      res.status(409).json({
-        status: 409,
-        error: "Email already exists",
-        message:
-          "The email address provided is already registered. Please use a different email or proceed to login.",
-      });
+    if (emailAlreadyPresent.result.length) {
+      throw conflict_message;
     } else {
       const encPassword = await passwordHashing(password);
       const signupUser = await user.signup(emailId, encPassword, isdeleted);
-      if (signupUser.error) {
-        res.status(500).json({
-          status: 500,
-          error: "Database error",
-          message: signupUser.error.message,
-        });
-      } else if (signupUser.roleResult.affectedRows) {
-        res.status(201).json({
-          status: 201,
-          message: "User has been successfully registered",
-        });
-      }
+      const response = new responseHandler(
+        user_signup.statusCode,
+        signupUser.roleResult,
+        user_signup.message
+      );
+      return response;
     }
-  } catch (err) {
-    res.status(500).json({
-      status: 500,
-      error: "Server error",
-      message: err.message,
-    });
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 };
 
@@ -55,40 +40,25 @@ const loginUser = async (req, res) => {
     const {
       body: { emailId, password },
     } = req;
-
-    const result = await user.login(emailId);
-
-    if (result.error) {
-      res.status(500).json({
-        status: 500,
-        error: "Database error",
-        message: result.error.message,
-      });
-    } else if (result.result.length) {
-      const hash = result.result[0].password;
-      const isCorrect = await passwordComparing(password, hash);
+    const userLogin = await user.login(emailId);
+    if (userLogin.result.length) {
+      const hashedPassword = userLogin.result[0].password;
+      const isCorrect = await passwordComparing(password, hashedPassword);
       if (isCorrect) {
-        const token = await generateJwtToken(result.result[0]);
-        res.status(200).json({
-          status: 200,
-          message: "Login successful",
-          token: token,
-        });
+        const token = await generateJwtToken(userLogin.result[0]);
+        const response = new responseHandler(
+          login_successfull.statusCode,
+          token,
+          login_successfull.message
+        )
+        return response;
       } else {
-        res.status(401).json({
-          status: 401,
-          error: "Unauthorized",
-          message: "Incorrect username or password.",
-        });
+        throw unauthorized;
       }
     }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      status: 500,
-      error: "Server error",
-      message: err.message,
-    });
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 };
 

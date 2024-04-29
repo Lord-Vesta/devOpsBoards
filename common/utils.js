@@ -6,7 +6,6 @@ dotenv.config();
 const secretKey = process.env.secretKey
 
 export const passwordHashing = async(password)=>{
-    console.log(password)
     const encPassword = await bcrypt.hash(password,10)
     return encPassword;
 }
