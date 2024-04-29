@@ -22,12 +22,7 @@ const signupUser = async (req, res) => {
     } else {
       const encPassword = await passwordHashing(password);
       const signupUser = await user.signup(emailId, encPassword, isdeleted);
-      const response = new responseHandler(
-        user_signup.statusCode,
-        signupUser.roleResult,
-        user_signup.message
-      );
-      return response;
+        return user_signup;
     }
   } catch (error) {
     console.log(error);
@@ -46,12 +41,8 @@ const loginUser = async (req, res) => {
       const isCorrect = await passwordComparing(password, hashedPassword);
       if (isCorrect) {
         const token = await generateJwtToken(userLogin.result[0]);
-        const response = new responseHandler(
-          login_successfull.statusCode,
-          token,
-          login_successfull.message
-        )
-        return response;
+
+        return token;
       } else {
         throw unauthorized;
       }
