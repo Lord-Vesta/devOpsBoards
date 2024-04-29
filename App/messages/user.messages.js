@@ -2,13 +2,13 @@ import {errorMessages,successMessages} from '../../constants/resMessages.js'
 import {errorStatusCodes,successStatusCodes} from '../../constants/statusCodes.js'
 import {messageHandler} from '../../common/handlers.js'
 
-const{badRequestMessage,unauthorizedMessage,forbiddenMessage,notFoundMessage,conflictMessage} = errorMessages
+const{unauthorizedMessage,conflictMessage} = errorMessages
 
-const {createdMessage,updatedMessage,deletedMessage,loginSuccessMessage} = successMessages
+const {createdMessage,loginSuccessMessage} = successMessages
 
-const {badRequest,unauthorized,forbidden,notFound,methodNotAllowed,conflict} = errorStatusCodes
+const {unauthorized,conflict} = errorStatusCodes
 
-const {ok,created,accepted,noContent,notModified} = successStatusCodes
+const {ok,created} = successStatusCodes
 
 export const newMessage = {
     conflict_message : new messageHandler(conflict,conflictMessage),

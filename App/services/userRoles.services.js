@@ -15,31 +15,11 @@ const getRolesOfUser = async (Id) => {
 
     return { error: null, result: rolesArr };
   } catch (error) {
-    return { error: error };
+    throw error;
   }
 };
 
-const getUsers = async (Id) => {
-  try {
-    const [result] = await db
-      .promise()
-      .query(`select * from UserTable where Id = ? and isDeleted = false`, [Id]);
-    return { error: null, result: result };
-  } catch (error) {
-    return { error: error };
-  }
-};
 
- const checkRoleExists = async (roleId) => {
-  try {
-    const [result] = await db
-      .promise()
-      .query(`Select * from Roles where Id = ? and isDeleted = false`, [roleId]);
-    return { error: null, result: result };
-  } catch (err) {
-    return err;
-  }
-};
 
  const addRolesToUsers = async(userId,roleId) => {
   try{
@@ -48,43 +28,23 @@ const getUsers = async (Id) => {
     return{error:null, result: result};
   }
   catch(error){
-    return {error:error}
+    throw error;
   }
 };
 
-const roleForUserExits = async(userId,roleId)=>{
-  try{
-    const [result] = await db.promise().query(`select Id from RolesForUsers where userId = ? and roleId = ? and isDeleted = false`,[userId,roleId]);
-    return {error:null, result: result};
-  }catch(error){
-    return {error:error}
-  }
-}
 
 const deleteRoleofUser = async(userId,roleId)=>{
   try{
-    const [result] = await db.promise().query(`update RolesForUsers set isDeleted = false where userId = ? and roleId = ?`,[userId,roleId])
+    const [result] = await db.promise().query(`update RolesForUsers set isDeleted = true where userId = ? and roleId = ?`,[userId,roleId])
     return{error:null, result: result};
   }catch(error){
-    return {error:error}
+    throw error;
   }
 }
 
-const getRoleIdFromRole = async(role)=>{
-  try{
-    const [result] = await db.promise().query(`select Id from Roles where Role = ? and isDeleted = false`,[role]);
-    return{error:null, result: result};
-  }catch(error){
-    return {error:error}
-  }
-}
 
 export default {
   getRolesOfUser,
-  getUsers,
-  checkRoleExists,
   addRolesToUsers,
-  roleForUserExits,
   deleteRoleofUser,
-  getRoleIdFromRole
 };
