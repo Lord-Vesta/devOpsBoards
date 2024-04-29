@@ -18,9 +18,9 @@ app.use(cors());
 app.use('/api/user',userRoutes);
 app.use("/api/roles", roleRoutes);
 app.use('/api/users',userRoleRoutes);
-app.use("/api/boards", boardsRoutes)
-app.use('/api/permissions',permissionRoutes)
-app.use('/api/boards',attachmentRoutes)
+app.use("/api/boards", boardsRoutes);
+app.use('/api/permissions',permissionRoutes);
+app.use('/api/boards',attachmentRoutes);
 app.use('/api/rolePermissions',rolePermissions);
 
 
