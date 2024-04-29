@@ -3,7 +3,6 @@ import roles from "../services/roles.services.js";
 export const listRoles = async (req, res) => {
   try {
     const result = await roles.getRoles();
-    console.log(result);
     if (result.error) {
       res.status(500).json({
         status: 500,
@@ -33,7 +32,7 @@ export const listRoles = async (req, res) => {
 
 export const specificRole = async (req, res) => {
   try {
-    const roleId = req.params.roleId;
+    const {params:{roleId}} = req;
     const result = await roles.getSpecificRole(roleId);
     if (result.error) {
       res.status(500).json({
@@ -66,7 +65,7 @@ export const insertRoles = async (req, res) => {
     const {
       body: { Role },
     } = req;
-    console.log("inside insertRoles");
+    // console.log("inside insertRoles");
     const isDeleted = false;
     const roleExists = await roles.existingRoles(Role);
     // console.log(roleExists);

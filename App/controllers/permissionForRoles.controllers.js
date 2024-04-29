@@ -43,14 +43,14 @@ const createPermissionForRoles = async (req, res) => {
     const roleId = req.params.roleId;
     const permissionId = req.params.permissionId;
 
-    console.log(roleId, permissionId);
+    // console.log(roleId, permissionId);
 
     const isRolePresent = await rolesServices.getSpecificRole(roleId);
 
     const isPermissionPresent = await permissionsService.specificPermission(
       permissionId
     );
-    console.log(isRolePresent, isPermissionPresent);
+    // console.log(isRolePresent, isPermissionPresent);
     if (!isRolePresent.result.length || !isPermissionPresent.result.length) {
       res.status(200).json({
         status: 200,

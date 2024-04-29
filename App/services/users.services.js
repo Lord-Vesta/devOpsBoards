@@ -23,13 +23,13 @@ const login = async (emailId) => {
       FROM UserTable u
       JOIN rolesForUsers ru ON u.Id = ru.userId
       JOIN Roles r ON ru.RoleId = r.Id
-      WHERE u.emailId = ? AND u.isDeleted = false`,
+      WHERE u.emailId = ? AND u.isDeleted = false and ru.isDeleted = false`,
       [emailId]
     );
     return { error: null, result: result };
   } catch (error) {
     console.error("Error during login:", error);
-    return {error:error};
+    throw error;
   }
 };
 
@@ -55,7 +55,7 @@ const signup = async (emailId, password, isdeleted) => {
       }
   } catch (error) {
     console.error("Error during signup:", error);
-    return {error:error};
+    throw error;
   }
 };
 

@@ -7,6 +7,8 @@ const authorize= (roles = []) =>{
         roles = [roles];
     }
 
+
+
     // const secret = process.env.secretKey;
     // console.log(secret);
     return (req,res,next)=>{
@@ -26,6 +28,6 @@ const authorize= (roles = []) =>{
     
 } 
 
-export default{
+ export default{
     authorize
 }
