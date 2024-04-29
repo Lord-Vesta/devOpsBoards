@@ -7,6 +7,7 @@ const secretKey = process.env.secretKey
 
 export const passwordHashing = async(password)=>{
     const encPassword = await bcrypt.hash(password,10)
+    console.log(encPassword);
     return encPassword;
 }
 

@@ -8,6 +8,7 @@ import {router as userRoleRoutes} from "./routes/userRole.routes.js";
 import {router as permissionRoutes} from './routes/permission.routes.js'
 import {router as attachmentRoutes} from './routes/attachments.routes.js'
 import{router as rolePermissions} from './routes/permissionForRoles.routes.js'
+import {router as boardsRoutes} from "./routes/boards.routes.js";
 
 const app = express();
 
@@ -33,7 +34,4 @@ app.use((err,req,res,next)=>{
   res.status(err.statusCode || 500).send(err)
 })
   
-
-
-
 export default app;
