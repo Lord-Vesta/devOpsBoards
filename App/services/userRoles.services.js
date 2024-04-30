@@ -10,10 +10,7 @@ const getRolesOfUser = async (Id) => {
            where ru.userId = ? and ru.isdeleted = false;`,
       [Id]
     );
-
-    const rolesArr = result.map(element => element.Role);
-
-    return { error: null, result: rolesArr };
+    return { error: null, result: result };
   } catch (error) {
     throw error;
   }

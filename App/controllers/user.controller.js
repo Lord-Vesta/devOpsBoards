@@ -5,13 +5,11 @@ import {
 } from "../../common/utils.js";
 import user from "../services/users.services.js";
 import { newMessage } from "../messages/user.messages.js";
-import { responseHandler } from "../../common/handlers.js";
 
-const { conflict_message, user_signup, login_successfull,unauthorized } = newMessage;
+const { conflict_message, user_signup,unauthorized } = newMessage;
 
 const signupUser = async (req, res) => {
   try {
-    console.log("inside signup try");
     const isdeleted = false;
     const {
       body: { emailId, password },
@@ -21,8 +19,8 @@ const signupUser = async (req, res) => {
       throw conflict_message;
     } else {
       const encPassword = await passwordHashing(password);
-      const signupUser = await user.signup(emailId, encPassword, isdeleted);
-        return user_signup;
+      await user.signup(emailId, encPassword, isdeleted);
+      return user_signup;
     }
   } catch (error) {
     console.log(error);
@@ -41,11 +39,13 @@ const loginUser = async (req, res) => {
       const isCorrect = await passwordComparing(password, hashedPassword);
       if (isCorrect) {
         const token = await generateJwtToken(userLogin.result[0]);
-
         return token;
       } else {
-        throw unauthorized;
+        throw unauthorized
       }
+    }
+    else{
+      throw unauthorized
     }
   } catch (error) {
     console.log(error);

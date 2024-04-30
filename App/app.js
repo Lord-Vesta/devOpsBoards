@@ -32,7 +32,7 @@ app.use(route.path, route.router);
 });
 
 app.use((err,req,res,next)=>{
-  res.status(err.statusCode || 500).send(new responseHandler(err))
+  res.status(err.statusCode || 500).send(new responseHandler(null,err))
 })
   
 export default app;
