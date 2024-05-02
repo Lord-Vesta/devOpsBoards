@@ -1,20 +1,50 @@
 
+
 import { result } from "@hapi/joi/lib/base.js";
 import { db } from "../../connection.js";
 
 
-const getSprints= async()=>{
+// const getSprints= async()=>{
+//     try{
+//         const [rows]=await db.promise.query(`select * from sprint where isDeleted=false`);
+//         return {result:rows};
+//     }catch(error){
+//         throw error;
+//     }
+// };
+
+const getAllSprints= async(boardId)=>{
     try{
-        const [rows]=await db.promise.query(`select * from sprint where isDeleted=false`);
+        const [rows]=await db.promise().query(`select * from sprint where boardId=? and isDeleted=false`,[boardId,userId]);
         return {result:rows};
+
     }catch(error){
         throw error;
     }
 };
 
-const getUserSprints=async(boardId,sprintId)=>{
+const getSprintById=async(boardId,sprintId)=>{
     try{
-        const [rows]=await db.promise.query(`select * from sprint where boardId=? and sprintId=?`,[boardId,sprintId]);
+        const [rows]=await db.promise().query(`select * from sprint where boardId=? and sprintId=?`,[boardId,sprintId]
+    );
+    return {result:rows}
+    }
+    catch(error){
+        throw error;
+    }
+}
+
+const getUserSprints=async(boardId,sprintId,userId)=>{
+    try{
+        const [rows]=await db.promise.query(`SELECT s.sprintId, s.boardId, su.userId
+        FROM SprintUser su
+        INNER JOIN sprint s ON su.sprintId = s.sprintId
+        INNER JOIN BoardTable bt ON s.boardId = bt.boardId
+        WHERE bt.boardId = ?
+        AND s.sprintId = ?
+        AND su.userId = ?;
+        
+        `,[boardId,sprintId,userId]);
 
         return {result:rows};
     }catch(error){
@@ -88,7 +118,8 @@ const deleteSprintDb=async(boardId,sprintId)=>{
 }
 
 export {
-    getSprints,
+    getAllSprints,
+    getSprintById,
     getUserSprints,
     createSprintForUser,
     checkSprintExists,

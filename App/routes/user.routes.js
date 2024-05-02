@@ -8,11 +8,7 @@ import {successStatusCodes} from '../../constants/statusCodes.js'
 
 const {ok} = successStatusCodes;
 
-import { responseHandler } from '../../common/handlers.js';
 
-import {successStatusCodes} from '../../constants/statusCodes.js'
-
-const {ok} = successStatusCodes
 
 
 export const router = express.Router();

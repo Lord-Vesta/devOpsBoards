@@ -1,33 +1,60 @@
 import { verifyToken } from "../../common/utils.js";
 
-import {getSprints,getUserSprints,getSprintById,createSprintForUser,deleteSprintDb} from "../services/sprints.services.js"
+import {getAllSprints,getUserSprints,getSprintById,createSprintForUser,deleteSprintDb} from "../services/sprints.services.js"
 import { boardsMessages } from "../messages/boards.messages.js";
+import { result } from "@hapi/joi/lib/base.js";
 
 const { board_fetched, conflict_message, unauthorized, board_created, board_updated, board_deleted, notFoundMessage, access_forbidden, bad_request, not_found } = boardsMessages
 
 
-export const listSprints = async (req, res) => {
-    try {
-        const authHeader = req.headers["authorization"];
-        const decodedToken = verifyToken(authHeader);
-        const userId = decodedToken.data.id;
-        const role = decodedToken.data.role;
-        const boardId=req.params.boarId;
-        const sprintsId=req.params.sprintId;
+// export const listSprints = async (req, res) => {
+//     try {
+//         const authHeader = req.headers["authorization"];
+//         const decodedToken = verifyToken(authHeader);
+//         const userId = decodedToken.data.id;
+//         const role = decodedToken.data.role;
+//         const boardId=req.params.boarId;
+//         const sprintsId=req.params.sprintId;
 
-        if (role === "admin") {
-            const { result } = await getSprints();
+//         if (role === "admin") {
+//             const { result } = await getSprints();
+//             return result.result
+//         } else if (role === "user") {
+//             const userSprintsResponse = await getUserSprints(boardId,sprintsId);
+
+//             return userSprintsResponse.result;
+//         }
+//     }
+//     catch (error) {
+//         throw error;
+//     }
+// };
+
+export const listAllSprints= async(req,res)=>{
+    try{
+        const authHeader=req.headers["authorization"];
+        const decodedToken=verifyToken(authHeader);
+        
+        const role=decodedToken.data.role;
+        const boardId=req.params.boardId;
+        const sprintId=req.params.sprintId;
+        const userId=decodedToken.data.id;
+
+        if(role==="admin"){
+            const result=await getAllSprints(boardId)
             return result.result
-        } else if (role === "user") {
-            const userSprintsResponse = await getUserSprints(boardId,sprintsId);
-
-            return userSprintsResponse.result;
+        } else if(role==="user"){
+            const userSprintsResponse=await getUserSprints(boardId,sprintId,userId);
+            return userSprintsResponse.result
+        }
+        else{
+            throw unauthorized;
         }
     }
-    catch (error) {
+    catch(error){
         throw error;
     }
-};
+}
 
 
 export const adminSpecificSprint = async (req, res) => {
@@ -35,9 +62,11 @@ export const adminSpecificSprint = async (req, res) => {
 
         const authHeader = req.headers["authorization"];
         const { role } = verifyToken(authHeader);
+        const boardId=req.params.boarId;
+        const sprintId=req.params.sprintId;
 
         if (role === "admin") {
-            const result = await getSprintById(req.params.boardId)  //check
+            const result = await getSprintById(boardId,sprintId)  
 
             return result.result
         } else {

@@ -1,13 +1,14 @@
 import { verifyToken } from "../../common/utils.js";
 
-import { getUserBoard, getBoards, getBoardById, createBoardForUser, editBoardData, checkBoardExistforUser,deleteBoardDb } from "../services/boards.services.js"
+import { getUserBoard, getBoards, getBoardById,checkUserExists, createBoardForUser, editBoardData, checkBoardExistforUser,deleteBoardDb } from "../services/boards.services.js"
 
 
-import * as  responseConstants from "../Constants/responseConstants.js"
+
 import { boardsMessages } from "../messages/boards.messages.js";
 
 
-const { board_fetched, conflict_message, unauthorized, board_created, board_updated, board_deleted, notFoundMessage, access_forbidden, bad_request, not_found } = boardsMessages
+
+const { board_fetched, conflict_message, unauthorized, board_created, board_updated, board_deleted, access_forbidden, bad_request, not_found, } = boardsMessages
 
 
 
@@ -63,22 +64,40 @@ export const adminSpecificBoard = async (req, res) => {
 
 export const createBoard = async (req, res) => {
     try {
-        const { title, assignedTo, state, type } = req.body;
+        const authHeader = req.headers["authorization"];
+        const decodedToken = verifyToken(authHeader);
+        const userId = decodedToken.data.id;
 
+        let { title, assignedTo, state, type } = req.body;
+      
+    
 
         if (!title || title.trim() === '') {
 
             throw bad_request
         }
 
-        const authHeader = req.headers["authorization"];
-        const decodedToken = verifyToken(authHeader);
-        const userId = decodedToken.data.id;
+        state = state !== undefined ? state : "To do";
+        type = type !== undefined ? type : "Epic";
+        assignedTo = assignedTo !== undefined ? assignedTo : "Unassigned";
+        console.log(assignedTo);
+        if(assignedTo!==undefined){
+            const result=  await checkUserExists(assignedTo);
+            
+            if( result.result.length > 0){
+                await createBoardForUser(userId, title, assignedTo, state, type);
+                return board_created;
+            }
+            else{
+                console.log("False");
+                    throw not_found;
+            }
+        }
 
-        await createBoardForUser(userId, title, assignedTo, state, type);
+        // await createBoardForUser(userId, title, assignedTo, state, type);
 
 
-        return board_created;
+        // return board_created;
 
     } catch (error) {
         console.error("Error creating board:", error);

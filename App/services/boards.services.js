@@ -39,6 +39,19 @@ const getBoardById = async (boardId) => {
   }
 };
 
+
+const checkUserExists=async(assignedTo)=>{
+  try{
+    const [rows]=await db.promise().query(`select * from usertable where emailId ="${assignedTo}"`);
+    console.log(assignedTo);
+    console.log(rows);
+    return {result:rows}
+  }
+  catch(error){
+    throw {error};
+  }
+}
+
 const createBoardForUser = async (userId, title, assignedTo, state, type) => {
     console.log("Creating board for user...");
     
@@ -51,11 +64,13 @@ const createBoardForUser = async (userId, title, assignedTo, state, type) => {
         console.log("Input parameters validated.");
         
     
-        assignedTo = assignedTo !== undefined ? assignedTo : "Unassigned";
-        state = state !== undefined ? state : "To do";
-        type = type !== undefined ? type : "Epic";
+        // assignedTo = assignedTo !== undefined ? assignedTo : "Unassigned";
+        // state = state !== undefined ? state : "To do";
+        // type = type !== undefined ? type : "Epic";
 
-        console.log("Default values set.");
+        // console.log("Default values set.");
+
+        
 
        
         const newBoard = {
@@ -217,6 +232,7 @@ export {
   getBoards,
   getUserBoard,
   getBoardById,
+  checkUserExists,
   createBoardForUser,
   editBoardData,
   checkBoardExistforUser,
