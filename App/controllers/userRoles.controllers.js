@@ -1,6 +1,6 @@
 import UserRoles from "../services/userRoles.services.js";
 import { userRoleMessages } from "../messages/userRoles.messages.js";
-const { ROLE_OF_USER_DELETED_SUCCESSFULLY } = userRoleMessages;
+const { ROLE_OF_USER_DELETED_SUCCESSFULLY,ROLE_OF_USER_ALREADY_EXISTS,ROLE_OF_USER_NOT_FOUND } = userRoleMessages;
 
 const getRolesOfUser = async (req, res) => {
   try {
@@ -19,6 +19,12 @@ const addRolesToUsers = async (req, res) => {
     const {
       params: { userId, roleId },
     } = req;
+
+    const rolesOfUser = UserRoles.getRolesOfUser(userId)
+
+    if(rolesOfUser.result.length){
+      throw ROLE_OF_USER_ALREADY_EXISTS;
+    }
 
     const addRolesToUser = await UserRoles.addRolesToUsers(userId,roleId);
     console.log(addRolesToUser);

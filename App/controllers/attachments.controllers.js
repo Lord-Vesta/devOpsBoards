@@ -1,134 +1,113 @@
-import streamifier from 'streamifier'
-import {v2 as cloudinary} from 'cloudinary';
-import {cloudobj} from '../../config.js'
-import attachmentsServices from '../services/attachments.services.js';
+import streamifier from "streamifier";
 
-cloudinary.config(cloudobj);
+import { v2 as cloudinary } from "cloudinary";
+import attachmentsServices from "../services/attachments.services.js";
+import { attachmentMessages } from "../messages/attachment.messages.js";
+import { Cloudinary } from "../../connection.js";
 
-const addAttachments = (req,res)=>{
-  const streamUpload = (req) => {
-    return new Promise((resolve, reject) => {
-        let stream = cloudinary.uploader.upload_stream(
-          (error, result) => {
-            if (result) {
-              resolve(result);
-            } else {
-              reject(error);
-            }
+const { ATTACHMENT_ADDED_SUCCESSFULLY,ATTACHMENT_DELETED_SUCCESSFULLY,
+  ATTACHMENT_NOT_FOUND } = attachmentMessages;
+
+
+
+const addAttachments = (req, res) => {
+  try {
+    const streamUpload = async(req) => {
+      console.log("inside stream upload");
+      // return new Promise((resolve, reject) => {
+        let stream = await cloudinary.uploader.upload_stream((error, result) => {
+          if (result) {
+            resolve(result);
+          } else {
+            reject(error);
           }
-        );
+        });
 
-      streamifier.createReadStream(req.file.buffer).pipe(stream);
-    })
-}
-async function upload(req) {
-    let result = await streamUpload(req);
-    console.log(result.secure_url);
-    // res.status(200).json({data:result});
-    const taskId = req.params.taskId;
-    const Url = result.secure_url
+        const dataStream = awaitstreamifier.createReadStream(req.file.buffer).pipe(stream);
+        console.log("dataStream-------------",dataStream)
+      // }
+    
+    };
 
-    const addAttachmentResult = await attachmentsServices.addAttachments(taskId,Url)
+    async function upload(req) {
+      console.log("inside upload");
+      const result = await streamUpload(req);
+      console.log(result);
+      const taskId = req.params.taskId;
+      const Url = result.secure_url;
 
-    if(addAttachmentResult.error){
-      res.status(500).json({
-        status: 500,
-        error: "Database error",
-        message: addAttachmentResult.error.message,
-      });
+      const addAttachmentResult = await attachmentsServices.addAttachments(taskId, Url);
+      console.log(addAttachmentResult);
+      if(addAttachmentResult.result.affectedRows){
+        console.log("attachments affected");
+        return addAttachmentResult.result
+      }
+      
     }
-    else if(addAttachmentResult.result.affectedRows){
-      res.status(200).json({
-        status: 200,
-        message: "attachment added",
-        data:addAttachmentResult.result
-      })
-    }
-}
-upload(req);
-}
-
+    const uploadResult = upload(req);
+    return uploadResult;
+  } catch (error) {
+    throw error;
+  }
+};
 
 const getAttachments = async (req, res) => {
-  const taskId = req.params.taskId;
-  const getAttachmentsResult = await attachmentsServices.getAttachments(taskId);
-  if(getAttachmentsResult.error){
-    res.status(500).json({
-      status: 500,
-      error: "Database error",
-      message: getAttachmentsResult.error.message,
-    });
+  try {
+    const taskId = req.params.taskId;
+    const getAttachmentsResult = await attachmentsServices.getAttachments(
+      taskId
+    );
+    return getAttachmentsResult.result;
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
-  else if(!getAttachmentsResult.result.length){
-    res.status(204).json({
-      status: 204,
-      message: "no attachment found",
-    });
-  }
-  else{
-    res.status(200).json({
-      status: 200,
-      message: "attachment listed",
-      data: getAttachmentsResult.result,
-    });
-  }
-}
+};
 
-const getSpecificAttachments = async(req,res)=>{
-  const taskId = req.params.taskId;
-  const attachmentId = req.params.attachmentId;
-  const getSpecificAttachmentsResult = await attachmentsServices.getSpecificAttachments(taskId,attachmentId);
-  if(getSpecificAttachmentsResult.error){
-    res.status(500).json({
-      status: 500,
-      error: "Database error",
-      message: getSpecificAttachmentsResult.error.message,
-    });
+const getSpecificAttachments = async (req, res) => {
+  try {
+    const {
+      params: { taskId, attachmentId },
+    } = req;
+
+    const getSpecificAttachmentsResult =
+      await attachmentsServices.getSpecificAttachments(taskId, attachmentId);
+
+    return getSpecificAttachmentsResult.result;
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
-  else if(!getSpecificAttachmentsResult.result.length){
-    res.status(204).json({
-      status: 204,
-      message: "no attachment found",
-    });
-  }
-  else{
-    res.status(200).json({
-      status: 200,
-      message: "attachment listed",
-      data: getSpecificAttachmentsResult.result,
-    });
-  }
-}
+};
 
 const deleteAttachments = async (req, res) => {
-  const taskId = req.params.taskId;
-  const attachmentId = req.params.attachmentId;
-  const deleteAttachmentsResult = await attachmentsServices.deleteAttachments(taskId,attachmentId);
-  if(deleteAttachmentsResult.error){
-    res.status(500).json({
-      status: 500,
-      error: "Database error",
-      message: deleteAttachmentsResult.error.message,
-    });
+  try {
+    const {
+      params: { taskId, attachmentId },
+    } = req;
+  
+    const getSpecificAttachments = await attachmentsServices.getSpecificAttachments(taskId,attachmentId)
+  
+    if(getSpecificAttachments.result.length){
+      await attachmentsServices.deleteAttachments(
+        taskId,
+        attachmentId
+      );
+      return ATTACHMENT_DELETED_SUCCESSFULLY;
+    }
+    else{
+      throw ATTACHMENT_NOT_FOUND
+    }
+  
+  } catch (error) {
+    throw error;
   }
-  else if(!deleteAttachmentsResult.result.affectedRows){
-    res.status(204).json({
-      status: 204,
-      message: "no attachment found",
-    });
-  }
-  else{
-    res.status(200).json({
-      status: 200,
-      message: "attachment deleted",
-      data: deleteAttachmentsResult.result,
-    });
-  }
-}
+  
+};
 
 export default {
   addAttachments,
   getAttachments,
   getSpecificAttachments,
-  deleteAttachments
-}
+  deleteAttachments,
+};
