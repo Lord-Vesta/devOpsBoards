@@ -6,7 +6,9 @@ export const errorMessages = {
     "notFoundMessage": "user not found.",
     "conflictMessage": "This user already exists or there is a conflict with existing data.",
     "resourceExistsMessage":"This resource already exists",
-    "resourceNotFoundMessage":"This resource not found"
+    "resourceNotFoundMessage":"This resource not found",
+    "unauthenticatedJwtToken" :"you are not authenticated to use please enter jwt token",
+    "jwtInvalid" : "jwt token is invalid"
 
 }
 

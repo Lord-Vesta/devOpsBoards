@@ -3,7 +3,7 @@ import { db } from "../../connection.js";
 
 const getPermissionForRoles = async(Id)=>{
     try{
-        const [result] = await db.promise().query(`select pr.Id,r.role,p.permission from Roles R JOIN permissionForRoles pr on pr.RoleId = r.Id JOIN permissions p on p.Id = pr.permissionId where pr.RoleId = ? and pr.isDeleted = false`,[Id])
+        const [result] = await db.promise().query(`select r.role,p.permission from Roles R JOIN permissionForRoles pr on pr.RoleId = r.Id JOIN permissions p on p.Id = pr.permissionId where pr.RoleId = ? and pr.isDeleted = false`,[Id])
         return {error:null,result:result}
     }catch(error){
         throw error

@@ -47,9 +47,10 @@ export const verifyToken = (token)=>{
 export const validateBody=(schema)=>{
 
     return(req,res,next)=>{
-        const{error} = schema.validate(schema)
+        // console.log(schema);
+        const {error} = schema.validate(req.body)
     if(error){
-        console.log(error.details[0].message);
+        // console.log(error.details[0].message);
         throw new messageHandler(badRequest,error.details[0].message)
     }else{
         next()
