@@ -9,7 +9,7 @@ export const getSpecificRole = async (Id) => {
       ]);
     return { error: null, result: result };
   } catch (error) {
-    return {error:error};
+    throw error;
   }
 };
 
@@ -20,27 +20,26 @@ export const getRoles = async () => {
       .query(`select Id,Role from Roles where isDeleted = false`);
     return { error: null, result: result };
   } catch (error) {
-    return { error: error };
+    throw error 
   }
 };
 
-export const addRole = async (Role, isDeleted) => {
+export const addRole = async (Role) => {
   try {
     const [result] = await db
       .promise()
       .query(`insert into Roles (Role,isDeleted) values (?,?)`, [
         Role,
-        isDeleted,
+        false
       ]);
 
     return { error: null, result: result };
   } catch (error) {
-    return {error: error};
+    throw error
   }
 };
 
 export const existingRoles = async (Role) => {
-  console.log(Role);
   try {
     const [result] = await db
       .promise()
@@ -50,7 +49,7 @@ export const existingRoles = async (Role) => {
       
     return { error: null, result: result };
   } catch (error) {
-    return {error:error};
+    throw error;
   }
 };
 
@@ -65,7 +64,7 @@ export const editRole = async (Id, Role) => {
 
     return { error: null, result: result };
   } catch (error) {
-    return {error:error};
+    throw error;
   }
 };
 
@@ -83,13 +82,13 @@ export const removeRole = async (Id) => {
           roleId,
         ]);
         // console.log("userRoleDelete");
-        return { error: null, result: result, userRoleDelete };
+        return { error: null, result: result, userRoleDelete};
     }
     else{
       return { error: "Role not found or not updated", result: null, userRoleDelete: null };
     }
   } catch (error) {
-    return {error:error};
+    throw error;
   }
 };
 

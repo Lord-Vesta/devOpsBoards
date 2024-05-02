@@ -1,61 +1,40 @@
 import getPermissionForRolesServices from "../services/permissionForRoles.services.js";
 import rolesServices from "../services/roles.services.js";
 import permissionsService from "../services/permissions.services.js";
+import { permissionForRolesMessages } from "../messages/permissionForRoles.messages.js";
+
+const {
+  PERMISSION_FOR_ROLE_ALREADY_PRESENT,
+  PERMISSION_FOR_ROLE_ADDED_SUCCESSFULLY,
+  PERMISSION_OR_ROLE_NOT_PRESENT,
+  PERMISSION_FOR_ROLE_DELETED_SUCCESSFULLY
+} = permissionForRolesMessages;
 
 const getPermissionForRoles = async (req, res) => {
   try {
-    const Id = req.params.roleId;
+    const {
+      params: { roleId },
+    } = req;
 
-    const result = await getPermissionForRolesServices.getPermissionForRoles(
-      Id
-    );
-
-    if (result.error) {
-      res.status(500).json({
-        status: 500,
-        error: "Database error",
-        message: result.error.message,
-      });
-    } else if (result.result.length) {
-      res.status(200).json({
-        status: 200,
-        message: "data is fetched successfully",
-        data: result.result,
-      });
-    } else if (!result.result.length) {
-      res.status(204).json({
-        status: 204,
-        message: "data is not found",
-        data: result.result,
-      });
-    }
+    const permissionForRolesResult =
+      await getPermissionForRolesServices.getPermissionForRoles(roleId);
+    return permissionForRolesResult.result;
   } catch (error) {
-    res.status(500).json({
-      status: 500,
-      error: "Database error",
-      message: result.error.message,
-    });
+    throw error;
   }
 };
 
 const createPermissionForRoles = async (req, res) => {
   try {
-    const roleId = req.params.roleId;
-    const permissionId = req.params.permissionId;
-
-    // console.log(roleId, permissionId);
+    const {
+      params: { roleId, permissionId },
+    } = req;
 
     const isRolePresent = await rolesServices.getSpecificRole(roleId);
+    const isPermissionPresent = await permissionsService.specificPermission(permissionId);
 
-    const isPermissionPresent = await permissionsService.specificPermission(
-      permissionId
-    );
-    // console.log(isRolePresent, isPermissionPresent);
     if (!isRolePresent.result.length || !isPermissionPresent.result.length) {
-      res.status(200).json({
-        status: 200,
-        message: "role or permission is not found",
-      });
+      throw PERMISSION_OR_ROLE_NOT_PRESENT;
     } else if (
       isPermissionPresent.result.length &&
       isRolePresent.result.length
@@ -65,53 +44,26 @@ const createPermissionForRoles = async (req, res) => {
           roleId,
           permissionId
         );
-
       if (permissionForRolesisPresent.result.length) {
-        res.status(200).json({
-          status: 200,
-          message: "permission is already present in this role",
-        });
+        throw PERMISSION_FOR_ROLE_ALREADY_PRESENT;
       } else if (!permissionForRolesisPresent.result.length) {
-        const result =
-          await getPermissionForRolesServices.createPermissionForRoles(
-            roleId,
-            permissionId
-          );
-
-        if (result.error) {
-          res.status(500).json({
-            status: 500,
-            error: "Database error",
-            message: result.error.message,
-          });
-        } else if (result.result.affectedRows) {
-          res.status(201).json({
-            status: 201,
-            message: "data is added successfully",
-            data: result.result,
-          });
-        } else if (!result.result.affectedRows) {
-          res.status(204).json({
-            status: 204,
-            message: "data is not added successfully",
-            data: result.result,
-          });
-        }
+        await getPermissionForRolesServices.createPermissionForRoles(
+          roleId,
+          permissionId
+        );
+        return PERMISSION_FOR_ROLE_ADDED_SUCCESSFULLY;
       }
     }
   } catch (error) {
-    res.status(500).json({
-      status: 500,
-      error: "Database error",
-      message: error.message,
-    });
+    throw error;
   }
 };
 
 const deletePermissionForRoles = async (req, res) => {
   try {
-    const roleId = req.params.roleId;
-    const permissionId = req.params.permissionId;
+    const {
+      params: { roleId, permissionId },
+    } = req;
 
     const permissionForRolesisPresent =
       await getPermissionForRolesServices.permissionForRolesisPresent(
@@ -120,32 +72,17 @@ const deletePermissionForRoles = async (req, res) => {
       );
 
     if (permissionForRolesisPresent.result.length) {
-      const result =
         await getPermissionForRolesServices.deletePermissionForRole(
           roleId,
           permissionId
         );
-
-      if (result.result.affectedRows) {
-        res.status(200).json({
-          status: 200,
-          message: "data is deleted successfully",
-          data: result.result,
-        });
-      }
-    }
-    else if(!permissionForRolesisPresent.result.length){
-        res.status(204).json({
-            status: 204,
-            message: "permission is not present in this role",
-        })
+        return PERMISSION_FOR_ROLE_DELETED_SUCCESSFULLY;
+      
+    } else if (!permissionForRolesisPresent.result.length) {
+      throw PERMISSION_OR_ROLE_NOT_PRESENT
     }
   } catch (error) {
-    res.status(500).json({
-      status: 500,
-      error: "Database error",
-      message: error.message,
-    });
+    throw error;
   }
 };
 

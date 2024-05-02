@@ -15,7 +15,6 @@ const authorize= (roles = []) =>{
         const jwtToken = req.headers['authorization'];
         const decoded = verifyToken(jwtToken)
         const role = decoded.data.role
-        console.log(role);
 
         if (!role || (roles.length && !roles.includes(role))) {
             // user's role is not authorized

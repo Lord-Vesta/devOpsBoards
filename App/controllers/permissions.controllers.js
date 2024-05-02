@@ -1,59 +1,35 @@
 import permissionServices from "../services/permissions.services.js";
+import { permissionMessages } from "../messages/permission.messages.js";
+
+const {
+  PERMISSION_ALREADY_EXISTS,
+  PERMISSION_ADDED_SUCCESSFULLY,
+  PERMISSION_EDITTED_SUCCESSFULLY,
+  PERMISSION_NOT_FOUND,
+  PERMISSION_DELETED_SUCCESSFULLY,
+} = permissionMessages;
 
 const listPermissions = async (req, res) => {
-  const result = await permissionServices.listPermissions();
-
-  if (result.error) {
-    res.status(500).json({
-      status: 500,
-      error: "Database error",
-      message: result.error.message,
-    });
-  } else if (result.result.length) {
-    res.status(200).json({
-      status: 200,
-      message: "permissions listed",
-      data: result.result,
-    });
-  } else if (!result.result.length) {
-    res.status(204).json({
-      status: 204,
-      message: "no permissions found",
-    });
+  try {
+    const listOfPermissions = await permissionServices.listPermissions();
+    return listOfPermissions.result;
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 };
 
 const specificPermission = async (req, res) => {
   try {
-    const Id = req.params.permissionId;
-
-    const result = await permissionServices.specificPermission(Id);
-    console.log(result.result.length);
-    if (result.error) {
-      res.status(500).json({
-        status: 500,
-        error: "Database error",
-        message: result.error.message,
-      });
-    } else if (result.result.length) {
-      console.log(result.result);
-      res.status(200).json({
-        status: 200,
-        message: "permission listed",
-        data: result.result,
-      });
-    } else if (!result.result.length) {
-      res.status(204).json({
-        status: 204,
-        message: "no permission found",
-      });
-    }
+    const {
+      params: { permissionId },
+    } = req;
+    const listOfSpeificPermissions =
+      await permissionServices.specificPermission(permissionId);
+    return listOfSpeificPermissions.result;
   } catch (error) {
-    res.status(500).json({
-      status: 500,
-      error: "Database error",
-      message: result.error.message,
-    });
+    console.log(error);
+    throw error;
   }
 };
 
@@ -63,144 +39,68 @@ const addPermission = async (req, res) => {
       body: { Permission },
     } = req;
 
-    const result = await permissionServices.searchBypermissions(Permission);
-    if(result.error){
-        res.status(500).json({
-            status: 500,
-            error: "Database error",
-            message: result.error.message,
-        });
-    }
-    else if(result.result.length){
-        res.status(409).json({
-            status: 409,
-            error: "Permission already exists",
-        });
-    }
-    else if(!result.result.length){
-        const addPermission = await permissionServices.addPermission(Permission);
-
-        if(addPermission.error){
-            res.status(500).json({
-                status: 500,
-                error: "Database error",
-                message: addPermission.error.message,
-            });
-        }
-        else if(addPermission.result.affectedRows){
-            res.status(200).json({
-                status: 200,
-                message: "permission added",
-                data:addPermission.result
-            })
-        }
+    const permissionExists = await permissionServices.searchBypermissions(
+      Permission
+    );
+    if (permissionExists.result.length) {
+      throw PERMISSION_ALREADY_EXISTS;
+    } else if (!permissionExists.result.length) {
+      await permissionServices.addPermission(Permission);
+      return PERMISSION_ADDED_SUCCESSFULLY;
     }
   } catch (error) {
-    res.status(500).json({
-      status: 500,
-      error: "Database error",
-      message: result.error.message,
-    });
+    console.log(error);
+    throw error;
   }
 };
 
 const editPermission = async (req, res) => {
-    try{    
-        const Id = req.params.permissionId;
-        const {permission} = req.body
+  try {
+    const {
+      params: { permissionId },
+      body: { permission },
+    } = req;
 
-        const result = await permissionServices.specificPermission(Id);
-
-        if(result.error){
-            res.status(500).json({
-                status: 500,
-                error: "Database error",
-                message: result.error.message,
-            });
-        }
-        else if(result.result.length){
-            const editPermission = await permissionServices.editPermission(Id,permission);
-            if(editPermission.error){
-                res.status(500).json({
-                    status: 500,
-                    error: "Database error",
-                    message: editPermission.error.message,
-                });
-            }
-            else if(editPermission.result.affectedRows){
-                res.status(200).json({
-                    status: 200,
-                    message: "permission edited",
-                    data:editPermission.result
-                })
-            }
-        }
-        else if(!result.result.length){
-            res.status(204).json({
-                status: 204,
-                message: "permission not found",
-            })
-        }
-
-
-    }catch(error){
-        res.status(500).json({
-            status: 500,
-            error: "Database error",
-            message: error.message,
-        });
+    const permissionExistsResult = await permissionServices.specificPermission(
+      permissionId
+    );
+    if (permissionExistsResult.result.length) {
+      await permissionServices.editPermission(permissionId, permission);
+      return PERMISSION_EDITTED_SUCCESSFULLY;
+    } else if (!permissionExistsResult.result.length) {
+      throw PERMISSION_NOT_FOUND;
     }
-}
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 
-const deletePermission = async(req,res)=>{
-    try{
-        const Id = req.params.permissionId;
-        const result = await permissionServices.specificPermission(Id);
+const deletePermission = async (req, res) => {
+  try {
+    const {
+      params: { permissionId },
+    } = req;
+    const permissionExistsResult = await permissionServices.specificPermission(
+      permissionId
+    );
 
-        if(result.error){
-            res.status(500).json({
-                status: 500,
-                error: "Database error",
-                message: result.error.message,
-            });
-        }
-        else if(result.result.length){
-            const deletePermission = await permissionServices.deletePermission(Id)
-
-            if(deletePermission.error){
-                res.status(500).json({
-                    status: 500,
-                    error: "Database error",
-                    message: deletePermission.error.message,
-                });
-            }
-            else if(deletePermission.result.affectedRows){
-                res.status(200).json({
-                    status: 200,
-                    message: "permission deleted",
-                    data:deletePermission.result
-                })
-            }
-        }
-        else if(!result.result.length){
-            res.status(204).json({
-                status: 204,
-                message: "permission not found",
-            })
-        }
-    }catch(error){
-        res.status(500).json({
-            status: 500,
-            error: "Database error",
-            message: result.error.message,
-        });
+    if (permissionExistsResult.result.length) {
+      await permissionServices.deletePermission(permissionId);
+      return PERMISSION_DELETED_SUCCESSFULLY;
+    } else if (!permissionExistsResult.result.length) {
+      throw PERMISSION_NOT_FOUND
     }
-}
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 
 export default {
   listPermissions,
   specificPermission,
   addPermission,
   editPermission,
-  deletePermission
+  deletePermission,
 };

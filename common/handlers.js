@@ -8,10 +8,12 @@ export class messageHandler {
 
 
 export class responseHandler{
-    constructor(data,error=null){
+
+    constructor(data,error = null){
         this.data = data;
         this.error = error;
-    }
+     }
+
 }
 
 export class routeHandler{

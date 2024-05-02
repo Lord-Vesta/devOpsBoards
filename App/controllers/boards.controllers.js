@@ -1,10 +1,5 @@
-// import { result } from "@hapi/joi/lib/base.js";
-
-// import { func } from "joi";
-
-
-
 import { verifyToken } from "../../common/utils.js";
+
 import { getUserBoard, getBoards, getBoardById, createBoardForUser, editBoardData, checkBoardExistforUser,deleteBoardDb } from "../services/boards.services.js"
 
 
@@ -13,6 +8,7 @@ import { boardsMessages } from "../messages/boards.messages.js";
 
 
 const { board_fetched, conflict_message, unauthorized, board_created, board_updated, board_deleted, notFoundMessage, access_forbidden, bad_request, not_found } = boardsMessages
+
 
 
 
@@ -64,9 +60,6 @@ export const adminSpecificBoard = async (req, res) => {
     }
 };
 
-// -----------------Get over--------------------------------------------
-// ----------------Post started-----------------------------------------
-
 
 export const createBoard = async (req, res) => {
     try {
@@ -94,6 +87,7 @@ export const createBoard = async (req, res) => {
 }
 //-----------------------------------Post over----------------------------------
 //------------------------------------Put started-------------------------------
+
 
 
 export const editBoard = async (req, res) => {
@@ -137,6 +131,7 @@ export const editBoard = async (req, res) => {
 export const deleteBoard = async (req, res) => {
     try {
 
+
        
         const authHeader = req.headers["authorization"];
         const decodedToken = verifyToken(authHeader);
@@ -174,102 +169,5 @@ export const deleteBoard = async (req, res) => {
         throw error
     }
 }
-
-// //-------------------------------------Post over--------------------------------
-
-// //------------------------------------Put started-------------------------------
-
-
-// export const editBoard = async (req, res) => {
-//     try {
-//         const Id = parseInt(req.params.ID);
-//         let allowedColumns = [
-//             "title",
-//             "assignedTo",
-//             "state",
-//             "type"
-//         ];
-//         let fields = [];
-//         let values = [];
-//         const authHeader = req.headers["authorization"];
-//         let decodedToken = verifyToken(authHeader);
-
-//         if (decodedToken.data.roles === "admin") {
-//             for (let c in allowedColumns) {
-//                 if (c in req.body) {
-//                     fields.push(`${c} = ?`), values.push(req.body[c]);
-//                 }
-//             }
-//             if (fields.length == 0) {
-//                 return res.sendStatus(204);
-//             }
-
-//             values.push(Id);
-//             editBoardData(fields, values, async function (result) {
-//                 if (result) {
-//                     res.status(200).json({
-//                         status: "Successfully Editted",
-//                         data: result,
-//                     });
-
-//                 } else {
-//                     res.status(400).json({
-//                         status: "No data found",
-//                     });
-//                 }
-
-//             });
-
-
-//         } else {
-//             if (decodedToken.data.ID == req.params.id) {
-//                 for (let c of allowedColumns) {
-//                     if (c in req.body) {
-//                         fields.push(`${c} = ?`), values.push(req.body[c]);
-//                     }
-//                 }
-//                 if (fields.length == 0) {
-//                     return res.sendStatus(204);
-//                 }
-
-//                 values.push(Id);
-//                 editBoardData(fields, values, async function (result) {
-//                     if (result) {
-//                         res.status(200).json({
-//                             status: "Successfully Editted",
-//                             data: result,
-//                         });
-//                     } else {
-//                         res.status(400).json({
-//                             status: "No data found",
-//                         });
-//                     }
-//                 });
-//             }
-//             else{
-//                 res.status(403).json({
-//                     status: 403,
-//                     error: "Invalid User Role",
-//                     message: "You are not authorized to perform this action."
-//                 });
-//             }
-//         }
-//     }
-//     catch(err){
-//         res.status(500).json({
-//             status:500,
-//             error:"Server error",
-//             message:err.message
-//         })
-//     }
-// }
-
-
-//-----------------------------------------------Put Board over---------------------------
-
-//-----------------------------------------------Delete Board started---------------------
-
-
-
 
 
