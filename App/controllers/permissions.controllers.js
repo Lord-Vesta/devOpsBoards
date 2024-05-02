@@ -36,16 +36,16 @@ const specificPermission = async (req, res) => {
 const addPermission = async (req, res) => {
   try {
     const {
-      body: { Permission },
+      body: { permission },
     } = req;
 
     const permissionExists = await permissionServices.searchBypermissions(
-      Permission
+      permission
     );
     if (permissionExists.result.length) {
       throw PERMISSION_ALREADY_EXISTS;
     } else if (!permissionExists.result.length) {
-      await permissionServices.addPermission(Permission);
+      await permissionServices.addPermission(permission);
       return PERMISSION_ADDED_SUCCESSFULLY;
     }
   } catch (error) {
