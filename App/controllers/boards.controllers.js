@@ -2,8 +2,6 @@ import { verifyToken } from "../../common/utils.js";
 
 import { getUserBoard, getBoards, getBoardById, createBoardForUser, editBoardData, checkBoardExistforUser,deleteBoardDb } from "../services/boards.services.js"
 
-
-import * as  responseConstants from "../Constants/responseConstants.js"
 import { boardsMessages } from "../messages/boards.messages.js";
 
 
