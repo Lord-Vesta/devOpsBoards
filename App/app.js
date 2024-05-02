@@ -10,6 +10,7 @@ import {router as permissionRoutes} from './routes/permission.routes.js'
 import {router as attachmentRoutes} from './routes/attachments.routes.js'
 import{router as rolePermissions} from './routes/permissionForRoles.routes.js'
 import {router as boardsRoutes} from "./routes/boards.routes.js";
+import { responseHandler } from "../common/handlers.js";
 
 const app = express();
 
@@ -34,7 +35,6 @@ app.use(route.path, route.router);
 });
 
 app.use((error,req,res,next)=>{
-  console.log(error);
   res.status(error.statusCode || 500).send(new responseHandler(null,error.message))
 
 })
