@@ -17,6 +17,7 @@ const signupUser = async (req, res) => {
     if (checkEmailAlreadyPresent.result.length) {
       throw conflict_message;
     } else {
+
       const encodedPassword = await passwordHashing(password);
       await user.signup(emailId, encodedPassword);
       return user_signup;

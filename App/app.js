@@ -8,7 +8,7 @@ import {router as userRoleRoutes} from "./routes/userRole.routes.js";
 import {router as permissionRoutes} from './routes/permission.routes.js'
 import {router as attachmentRoutes} from './routes/attachments.routes.js'
 import{router as rolePermissions} from './routes/permissionForRoles.routes.js'
-import { responseHandler } from "../common/handlers.js";
+import {router as boardsRoutes} from "./routes/boards.routes.js";
 
 const app = express();
 
@@ -23,16 +23,19 @@ const routes = [
     { path: '/api/users', router: userRoleRoutes },
     { path: '/api/permissions', router: permissionRoutes },
     { path: '/api/boards', router: attachmentRoutes },
-    { path: '/api/rolePermissions', router: rolePermissions }
+    { path: '/api/rolePermissions', router: rolePermissions },
+    { path: '/api/board',router: boardsRoutes}
   ];
   
 routes.forEach(route => {
+
 app.use(route.path, route.router);
 });
 
 app.use((error,req,res,next)=>{
   console.log(error);
   res.status(error.statusCode || 500).send(new responseHandler(null,error.message))
+
 })
   
 export default app;

@@ -1,4 +1,6 @@
-// import { any } from "joi";
+
+
+
 import { db } from "../../connection.js";
 
 const getBoards = async () => {
@@ -8,31 +10,32 @@ const getBoards = async () => {
     );
     return { result: rows };
   } catch (error) {
-    return { error };
+    throw { error };
   }
 };
 
 const getUserBoard = async (userId) => {
   try {
+    // console.log(userId);
     const [rows] = await db.promise().query(
       `SELECT * FROM BoardTable WHERE userId = ? AND isDeleted = false`,
       [userId]
     );
     return { result: rows };
   } catch (error) {
-    return { error };
+    throw { error };
   }
 };
 
 const getBoardById = async (boardId) => {
   try {
     const [rows] = await db.promise().query(
-      `SELECT * FROM BoardTable WHERE userID = ? AND isDeleted = false`,
+      `SELECT * FROM BoardTable WHERE boardId = ? AND isDeleted = false`,
       [boardId]
     );
     return { result: rows };
   } catch (error) {
-    return { error };
+    throw { error };
   }
 };
 
@@ -47,7 +50,7 @@ const createBoardForUser = async (userId, title, assignedTo, state, type) => {
 
         console.log("Input parameters validated.");
         
-        // Set default values if not provided
+    
         assignedTo = assignedTo !== undefined ? assignedTo : "Unassigned";
         state = state !== undefined ? state : "To do";
         type = type !== undefined ? type : "Epic";
@@ -74,19 +77,19 @@ const createBoardForUser = async (userId, title, assignedTo, state, type) => {
 
         console.log("Board created successfully:", result);
 
-        // Return result
+        
         const responseData = {
             title: newBoard.title,
             assignedTo: newBoard.assignedTo,
             state: newBoard.state,
             type: newBoard.type,
-            isDeleted: newBoard.isDeleted // Include isDeleted in the response
+            isDeleted: newBoard.isDeleted 
         };
 
         return { result: responseData };
     } catch (error) {
         console.error("Error creating board:", error);
-        return { error };
+        throw { error };
     }
 };
 
@@ -175,17 +178,49 @@ const editBoardData = async (userId, newData) => {
     return { result: responseData };
   } catch (error) {
     console.error('Error updating board data:', error);
-    return { error };
+    throw { error };
   }
 };
 
+const checkBoardExistforUser=async(boardId,userId)=>{
+  try{
+    console.log(boardId);
+    console.log(userId);
+    const [rows] = await db.promise().query(
+      `SELECT * FROM BoardTable WHERE boardId=? AND userId=?`,
+      [boardId, userId]
+    );
+    console.log(rows);
+  
+  return {result:rows}
+  }
+  catch(error){
+    throw error
+  }
+}
+
+
+const deleteBoardDb=async(boardId,userId)=>{
+  try{
+
+    const [rows]=await db.promise().query(`UPDATE BoardTable
+    SET isDeleted = true
+    WHERE boardId = ? AND userID = ?`,[boardId,userId]);
+    return {result:rows}
+  }
+  catch(error){
+    throw error
+  }
+}
 
 export {
   getBoards,
   getUserBoard,
   getBoardById,
   createBoardForUser,
-  editBoardData
+  editBoardData,
+  checkBoardExistforUser,
+  deleteBoardDb
 };
 
 
