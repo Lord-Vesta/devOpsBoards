@@ -6,7 +6,7 @@ import attachmentsServices from '../services/attachments.services.js';
 cloudinary.config(cloudobj);
 
 const addAttachments = (req,res)=>{
-  let streamUpload = (req) => {
+  const streamUpload = (req) => {
     return new Promise((resolve, reject) => {
         let stream = cloudinary.uploader.upload_stream(
           (error, result) => {

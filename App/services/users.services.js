@@ -10,8 +10,8 @@ const checkAlreadyPresent = async (emailId) => {
       );
     return { error: null, result: result };
   } catch (error) {
-    console.error("Error during checkAlreadyPresent:", error);
-    return {error:error};
+    console.error(error);
+    throw error;
   }
 };
 
@@ -28,18 +28,18 @@ const login = async (emailId) => {
     );
     return { error: null, result: result };
   } catch (error) {
-    console.error("Error during login:", error);
+    console.error(error);
     throw error;
   }
 };
 
-const signup = async (emailId, password, isdeleted) => {
+const signup = async (emailId, password) => {
   try {
     const [userResult] = await db
       .promise()
       .query(
         `insert into UserTable (emailID,password,isDeleted) values (?,?,?)`,
-        [emailId, password, isdeleted]
+        [emailId, password, false]
       );
     if (userResult.affectedRows) {
       const userId = userResult.insertId;
@@ -54,7 +54,7 @@ const signup = async (emailId, password, isdeleted) => {
         }
       }
   } catch (error) {
-    console.error("Error during signup:", error);
+    console.error(error);
     throw error;
   }
 };

@@ -1,7 +1,13 @@
 import bcrypt from 'bcryptjs';
 import jsonwebtoken from "jsonwebtoken";
 import dotenv from "dotenv";
+import { errorStatusCodes } from '../constants/statusCodes.js';
+import { responseHandler } from './handlers.js';
+import { messageHandler } from './handlers.js';
 dotenv.config();
+
+
+const {badRequest} = errorStatusCodes
 
 const secretKey = process.env.secretKey
 
@@ -36,4 +42,18 @@ export const verifyToken = (token)=>{
     catch(err){
         return { success: false, message: err.message };
     }
+}
+
+export const validateBody=(schema)=>{
+
+    return(req,res,next)=>{
+        const{error} = schema.validate(schema)
+    if(error){
+        console.log(error.details[0].message);
+        throw new messageHandler(badRequest,error.details[0].message)
+    }else{
+        next()
+    }
+    }
+    
 }

@@ -16,6 +16,7 @@ router.post('/signup',validators.signup, async (req,res,next)=>{
         const singupResponse = await userControllers.signupUser(req,res)
         res.status(singupResponse.statusCode).send(new responseHandler(singupResponse))
     } catch (error) {
+        // console.log(error);
         next(error)
     }
 }) 
