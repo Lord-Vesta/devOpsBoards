@@ -8,10 +8,9 @@ export class messageHandler {
 
 
 export class responseHandler{
-    constructor(statusCode,data,message){
-        this.statusCode = statusCode;
-        this.data = data
-        this.message = message;
+    constructor(data,error=null){
+        this.data = data;
+        this.error = error;
     }
 }
 
