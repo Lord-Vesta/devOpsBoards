@@ -22,6 +22,7 @@ export const boardsMessages = {
     not_found:new messageHandler(notFound,notFoundMessage),
     access_forbidden:new messageHandler(forbidden,forbiddenMessage),
     bad_request:new messageHandler(badRequest,badRequestMessage),
-    no_content:new messageHandler(noContent,noContentMessage)
+    no_content:new messageHandler(noContent,noContentMessage),
+    
 }
 
