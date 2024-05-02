@@ -15,8 +15,8 @@ const{
 
 export const listRoles = async (req, res) => {
   try {
-    const listOfRoles = await roles.getRoles();
-    return listOfRoles.result;
+    const listOfRolesResult = await roles.getRoles();
+    return listOfRolesResult.result;
   } catch (error) {
     console.log(error);
     throw error;
@@ -28,9 +28,10 @@ export const specificRole = async (req, res) => {
     const {
       params: { roleId },
     } = req;
-    const listSpecificRoles = await roles.getSpecificRole(roleId);
-    return listSpecificRoles.result;
+    const listSpecificRolesResult = await roles.getSpecificRole(roleId);
+    return listSpecificRolesResult.result;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
@@ -61,12 +62,12 @@ export const updateRole = async (req, res) => {
     if (roleId == 1 || roleId == 2) {
       throw UPDATE_RESTRICTED;
     } else {
-      const specificRole = await roles.getSpecificRole(roleId);
-       if (specificRole.result.length) {
+      const RoleExists = await roles.getSpecificRole(roleId);
+       if (RoleExists.result.length) {
         await roles.editRole(roleId, Role);
         return UPDATE_ROLE;
         
-      } else if (!specificRole.result.length) {
+      } else if (!RoleExists.result.length) {
         throw ROLE_NOT_FOUND
       }
     }
@@ -96,6 +97,7 @@ export const deleteRole = async (req, res) => {
       
     }
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };

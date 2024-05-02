@@ -1,9 +1,6 @@
 import UserRoles from "../services/userRoles.services.js";
-import permissionForRoles from "../services/permissionForRoles.services.js";
 import { userRoleMessages } from "../messages/userRoles.messages.js";
-import { responseHandler } from "../../common/handlers.js";
-const { roleOfUserDeletedSuccessfully } = userRoleMessages;
-
+const { ROLE_OF_USER_DELETED_SUCCESSFULLY } = userRoleMessages;
 
 const getRolesOfUser = async (req, res) => {
   try {
@@ -13,18 +10,21 @@ const getRolesOfUser = async (req, res) => {
     return rolesOfUsers.result;
   } catch (error) {
     console.log(error);
-    throw error;
+    throw error.message;
   }
 };
 
 const addRolesToUsers = async (req, res) => {
   try {
-    const{params:{userId, roleId}} = req;
+    const {
+      params: { userId, roleId },
+    } = req;
 
-      
+    const addRolesToUser = await UserRoles.addRolesToUsers(userId,roleId);
+    console.log(addRolesToUser);
   } catch (error) {
     console.log(error);
-    throw error;
+    throw error.message;
   }
 };
 
@@ -33,16 +33,20 @@ const deleteRoleofUser = async (req, res) => {
     const {
       params: { userId, roleId },
     } = req;
-    const roleOfUserDeleted = await UserRoles.deleteRoleofUser(userId, roleId);
 
-    const deletedRoles = new responseHandler(
-      roleOfUserDeletedSuccessfully.statusCode,
-      roleOfUserDeleted.result,
-      roleOfUserDeletedSuccessfully.message
+    const listSpecificRoleOfUser = await UserRoles.getSpecificRoleOfUser(
+      userId,
+      roleId
     );
 
-    return deletedRoles;
+    if (listSpecificRoleOfUser.result.length) {
+      await UserRoles.deleteRoleofUser(userId, roleId);
+      return ROLE_OF_USER_DELETED_SUCCESSFULLY;
+    } else {
+      throw ROLE_OF_USER_NOT_FOUND;
+    }
   } catch (error) {
+    console.log(error);
     throw error.message;
   }
 };

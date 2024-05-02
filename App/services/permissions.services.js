@@ -6,7 +6,7 @@ const listPermissions = async()=>{
         return {error:null,result:result}
     }
     catch(error){
-        return {error:error}
+        throw error
     }
 }
 
@@ -17,7 +17,7 @@ const specificPermission = async(Id)=>{
         return {error:null,result:result}
     }
     catch(error){
-        return{error:error}
+        throw error
     }
 }
 
@@ -27,7 +27,7 @@ const addPermission = async(permission)=>{
 
         return{error:null,result:result}
     }catch(error){
-        return{error:error}
+        throw error
     }
 }
 
@@ -36,7 +36,7 @@ const searchBypermissions = async(permission)=>{
         const [result] = await db.promise().query(`select * from permissions where permission = ?`,[permission])
         return {error:null,result:result}
     }catch(error){
-        return{error:error}
+        throw error
     }
 }
 
@@ -47,7 +47,7 @@ const editPermission = async(Id,permission)=>{
         return{error:null,result:result}
     }
     catch(error){
-        return{error:error}
+        throw error
     }
 }
 
@@ -58,7 +58,7 @@ const deletePermission = async(Id)=>{
         return{error:null,result:result}
     }
     catch(error){
-        return{error:error}
+        throw error
     }
 }
 

@@ -10,16 +10,15 @@ const { conflict_message, user_signup,unauthorized } = newMessage;
 
 const signupUser = async (req, res) => {
   try {
-    const isdeleted = false;
     const {
       body: { emailId, password },
     } = req;
-    const emailAlreadyPresent = await user.checkAlreadyPresent(emailId);
-    if (emailAlreadyPresent.result.length) {
+    const checkEmailAlreadyPresent = await user.checkAlreadyPresent(emailId);
+    if (checkEmailAlreadyPresent.result.length) {
       throw conflict_message;
     } else {
-      const encPassword = await passwordHashing(password);
-      await user.signup(emailId, encPassword, isdeleted);
+      const encodedPassword = await passwordHashing(password);
+      await user.signup(emailId, encodedPassword);
       return user_signup;
     }
   } catch (error) {
