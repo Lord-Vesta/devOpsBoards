@@ -6,30 +6,6 @@ import { result } from "@hapi/joi/lib/base.js";
 
 const { board_fetched, conflict_message, unauthorized, board_created, board_updated, board_deleted, notFoundMessage, access_forbidden, bad_request, not_found } = boardsMessages
 
-
-// export const listSprints = async (req, res) => {
-//     try {
-//         const authHeader = req.headers["authorization"];
-//         const decodedToken = verifyToken(authHeader);
-//         const userId = decodedToken.data.id;
-//         const role = decodedToken.data.role;
-//         const boardId=req.params.boarId;
-//         const sprintsId=req.params.sprintId;
-
-//         if (role === "admin") {
-//             const { result } = await getSprints();
-//             return result.result
-//         } else if (role === "user") {
-//             const userSprintsResponse = await getUserSprints(boardId,sprintsId);
-
-//             return userSprintsResponse.result;
-//         }
-//     }
-//     catch (error) {
-//         throw error;
-//     }
-// };
-
 export const listAllSprints= async(req,res)=>{
     try{
         const authHeader=req.headers["authorization"];

@@ -19,7 +19,8 @@ const authorizationRoles = ['user','admin']
 
 router.get('/:taskId/attachments',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
     try {
-        const listAttachmentsResponse = await attachmentsControllers.getAttachments(req,res)
+        const {params:{taskId}} = req;
+        const listAttachmentsResponse = await attachmentsControllers.getAttachments(taskId)
         res.status(ok).send(new responseHandler(listAttachmentsResponse))
     } catch (error) {
         next(error);
@@ -29,7 +30,8 @@ router.get('/:taskId/attachments',authenticateJwtToken,rolesMiddleware.authorize
 
 router.get('/:taskId/attachments/:attachmentId',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
     try {
-        const listSpecificAttachmentResponse = await attachmentsControllers.getSpecificAttachments(req,res);
+        const{params:{taskId,attachmentId}} = req;
+        const listSpecificAttachmentResponse = await attachmentsControllers.getSpecificAttachments(taskId,attachmentId);
 
         res.status(ok).send(new responseHandler(listSpecificAttachmentResponse))
     } catch (error) {
@@ -41,8 +43,9 @@ router.get('/:taskId/attachments/:attachmentId',authenticateJwtToken,rolesMiddle
 router.post("/:taskId/attachments", fileUpload.single("file"),authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),
 async(req,res,next)=>{
     try {
-        
-        const addAttachmentResponse =  await attachmentsControllers.addAttachments(req,res)
+        const {params:{taskId}} = req
+        const file = req.file;
+        const addAttachmentResponse =  await attachmentsControllers.addAttachments(file,taskId)
         if(addAttachmentResponse.affectedRows){
             res.status(ATTACHMENT_ADDED_SUCCESSFULLY.statusCode).send(new responseHandler(ATTACHMENT_ADDED_SUCCESSFULLY))
         }
@@ -54,7 +57,8 @@ async(req,res,next)=>{
 
 router.delete("/:taskId/attachments/:attachmentId",authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
     try {
-        const deletedAttachmentResponse = await attachmentsControllers.deleteAttachments(req,res);
+        const {params:{taskId,attachmentId}} = req;
+        const deletedAttachmentResponse = await attachmentsControllers.deleteAttachments(taskId,attachmentId);
 
         res.status(deletedAttachmentResponse.statusCode).send(new responseHandler(deletedAttachmentResponse))
     } catch (error) {

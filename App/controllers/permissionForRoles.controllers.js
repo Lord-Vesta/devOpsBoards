@@ -10,26 +10,19 @@ const {
   PERMISSION_FOR_ROLE_DELETED_SUCCESSFULLY
 } = permissionForRolesMessages;
 
-const getPermissionForRoles = async (req, res) => {
+const getPermissionForRoles = async (roleId) => {
   try {
-    const {
-      params: { roleId },
-    } = req;
-
     const permissionForRolesResult =
       await getPermissionForRolesServices.getPermissionForRoles(roleId);
     return permissionForRolesResult.result;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
 
-const createPermissionForRoles = async (req, res) => {
+const createPermissionForRoles = async (roleId,permissionId) => {
   try {
-    const {
-      params: { roleId, permissionId },
-    } = req;
-
     const isRolePresent = await rolesServices.getSpecificRole(roleId);
     const isPermissionPresent = await permissionsService.specificPermission(permissionId);
 
@@ -55,16 +48,13 @@ const createPermissionForRoles = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
 
-const deletePermissionForRoles = async (req, res) => {
+const deletePermissionForRoles = async (roleId, permissionId) => {
   try {
-    const {
-      params: { roleId, permissionId },
-    } = req;
-
     const permissionForRolesisPresent =
       await getPermissionForRolesServices.permissionForRolesisPresent(
         roleId,
@@ -82,6 +72,7 @@ const deletePermissionForRoles = async (req, res) => {
       throw PERMISSION_OR_ROLE_NOT_PRESENT
     }
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };

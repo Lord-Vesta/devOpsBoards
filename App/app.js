@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { responseHandler } from "../common/handlers.js";
-
 import { roleRouter } from "./routes/roles.routes.js";
 import {router as userRoutes} from "./routes/user.routes.js";
 import {router as userRoleRoutes} from "./routes/userRole.routes.js";

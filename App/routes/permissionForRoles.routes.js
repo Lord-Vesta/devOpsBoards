@@ -15,8 +15,11 @@ const authorizationRoles = ['user','admin']
 
 router.get("/:roleId/permissions",authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles) ,async (req, res, next) => {
   try {
+    const {
+      params: { roleId },
+    } = req;
     const permissionForRolesResponse =
-      await permissionForRoles.getPermissionForRoles(req, res);
+      await permissionForRoles.getPermissionForRoles(roleId);
     res.status(ok).send(new responseHandler(permissionForRolesResponse));
   } catch (error) {
     next(error);
@@ -25,8 +28,11 @@ router.get("/:roleId/permissions",authenticateJwtToken,rolesMiddleware.authorize
 
 router.post("/:roleId/permissions/:permissionId",authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles) ,async (req, res, next) => {
   try {
+    const {
+      params: { roleId, permissionId },
+    } = req;
     const addedPermissionForRolesResponse =
-      await permissionForRoles.createPermissionForRoles(req, res);
+      await permissionForRoles.createPermissionForRoles(roleId, permissionId);
     res
       .status(addedPermissionForRolesResponse.statusCode)
       .send(new responseHandler(addedPermissionForRolesResponse));
@@ -38,8 +44,10 @@ router.post("/:roleId/permissions/:permissionId",authenticateJwtToken,rolesMiddl
 router.delete(
   "/:roleId/permissions/:permissionId",authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
     try {
-      const deletedPermissionForRolesResponse = await permissionForRoles.deletePermissionForRoles(req,res);
-
+      const {
+        params: { roleId, permissionId },
+      } = req;
+      const deletedPermissionForRolesResponse = await permissionForRoles.deletePermissionForRoles(roleId,permissionId);
       res.status(deletedPermissionForRolesResponse.statusCode).send(new responseHandler(deletedPermissionForRolesResponse));
     } catch (error) {
       next(error);

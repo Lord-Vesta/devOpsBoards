@@ -6,11 +6,6 @@ const authorize= (roles = []) =>{
     if (typeof roles === "string") {
         roles = [roles];
     }
-
-
-
-    // const secret = process.env.secretKey;
-    // console.log(secret);
     return (req,res,next)=>{
         const jwtToken = req.headers['authorization'];
         const decoded = verifyToken(jwtToken)
