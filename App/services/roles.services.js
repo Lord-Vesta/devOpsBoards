@@ -20,7 +20,7 @@ export const getRoles = async () => {
       .query(`select Id,Role from Roles where isDeleted = false`);
     return { error: null, result: result };
   } catch (error) {
-    throw error 
+    throw error;
   }
 };
 
@@ -28,14 +28,11 @@ export const addRole = async (Role) => {
   try {
     const [result] = await db
       .promise()
-      .query(`insert into Roles (Role,isDeleted) values (?,?)`, [
-        Role,
-        false
-      ]);
+      .query(`insert into Roles (Role,isDeleted) values (?,?)`, [Role, false]);
 
     return { error: null, result: result };
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 
@@ -44,9 +41,9 @@ export const existingRoles = async (Role) => {
     const [result] = await db
       .promise()
       .query(`select * from Roles where Role = ? and isDeleted = false`, [
-        Role,
+        Role,  
       ]);
-      
+
     return { error: null, result: result };
   } catch (error) {
     throw error;
@@ -73,24 +70,37 @@ export const removeRole = async (Id) => {
     const [result] = await db
       .promise()
       .query(`update Roles set isDeleted = true where Id = ?`, [Id]);
-      // console.log(result.affectedRows);
-     if(result.affectedRows) {
+    // console.log(result.affectedRows);
+    if (result.affectedRows) {
       const roleId = Id;
       const userRoleDelete = await db
         .promise()
         .query(`update RolesForUsers set isDeleted = true where roleId = ?`, [
           roleId,
         ]);
-        // console.log("userRoleDelete");
-        return { error: null, result: result, userRoleDelete};
-    }
-    else{
-      return { error: "Role not found or not updated", result: null, userRoleDelete: null };
+      // console.log("userRoleDelete");
+      return { error: null, result: result, userRoleDelete };
+    } else {
+      throw {
+        error: "Role not found or not updated",
+        result: null,
+        userRoleDelete: null,
+      };
     }
   } catch (error) {
     throw error;
   }
 };
+
+export const roleIdFromRole = async(role)=>{
+  try {
+    const [result] = await db.promise().query(`select Id from Roles where Role = ? and isDeleted = false`,[role]);
+    return {error:null,result:result}
+  } catch (error) {
+    console.log(error);
+    throw error
+  }
+}
 
 export default {
   getSpecificRole,

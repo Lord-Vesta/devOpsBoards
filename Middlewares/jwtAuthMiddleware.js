@@ -8,7 +8,7 @@ const {JWT_INVALID,ENTER_JWT_TOKEN} = jwtUnauthenticatedMessages
 export const authenticateJwtToken = async (req,res,next)=>{
     try {
         const authHeader = req.headers['authorization']
-    const result = await verifyToken(authHeader)
+        const result = verifyToken(authHeader)
 
     res.locals = result.data;
    

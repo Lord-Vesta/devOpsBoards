@@ -2,7 +2,7 @@ import express from 'express';
 import rolesValidator from '../validators/roles.validator.js'
 import rolesRoutes from '../controllers/roles.controllers.js';
 import { authenticateJwtToken } from '../../Middlewares/jwtAuthMiddleware.js';
-import rolesMiddleware from '../../Middlewares/roles.middleware.js';
+import rolesMiddleware, { deleteAuthorize, editAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
 import{successStatusCodes} from '../../constants/statusCodes.js'
 import { responseHandler } from '../../common/handlers.js';
 import { validateBody } from '../../common/utils.js';
@@ -12,12 +12,13 @@ const {insertRolesSchema,updateRolesSchema} = rolesValidator
 
 const {ok} = successStatusCodes
 
-const authorizationRoles = ['user','admin']
+const authorizationRoles = ['user','admin',]
 
 
 export const roleRouter = express.Router();
 
-roleRouter.get('/',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
+
+roleRouter.get('/',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     try{
         const listOfRolesResponse = await rolesRoutes.listRoles()
         res.status(ok).send(new responseHandler(listOfRolesResponse))
@@ -26,7 +27,7 @@ roleRouter.get('/',authenticateJwtToken,rolesMiddleware.authorize(authorizationR
     }
 })
 
-roleRouter.get('/:roleId',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
+roleRouter.get('/:roleId',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     try{
         const {
             params: { roleId },
@@ -38,7 +39,7 @@ roleRouter.get('/:roleId',authenticateJwtToken,rolesMiddleware.authorize(authori
     }
 })
 
-roleRouter.post('/',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),
+roleRouter.post('/',authenticateJwtToken,postAuthorize,
 validateBody(insertRolesSchema),async(req,res,next)=>{
     try {
         const {
@@ -51,7 +52,7 @@ validateBody(insertRolesSchema),async(req,res,next)=>{
     }
 })
 
-roleRouter.put('/:roleId',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),
+roleRouter.put('/:roleId',authenticateJwtToken,editAuthorize,
 validateBody(updateRolesSchema),async(req,res,next)=>{
     try {
         const { body:{Role},params:{roleId} } = req
@@ -62,7 +63,7 @@ validateBody(updateRolesSchema),async(req,res,next)=>{
     }
 })
 
-roleRouter.delete('/:roleId',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
+roleRouter.delete('/:roleId',authenticateJwtToken,deleteAuthorize,async(req,res,next)=>{
     try {
         const {params:{roleId}} = req;
         const roleDeleted = await rolesRoutes.deleteRole(roleId)

@@ -14,6 +14,7 @@ const {
 export const listRoles = async () => {
   try {
     const listOfRolesResult = await roles.getRoles();
+    console.log(listOfRolesResult.result);
     return listOfRolesResult.result;
   } catch (error) {
     console.log(error);

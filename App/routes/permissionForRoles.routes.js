@@ -3,7 +3,7 @@ import { authenticateJwtToken } from "../../Middlewares/jwtAuthMiddleware.js";
 import permissionForRoles from "../controllers/permissionForRoles.controllers.js";
 import { responseHandler } from "../../common/handlers.js";
 import { successStatusCodes } from "../../constants/statusCodes.js";
-import rolesMiddleware from '../../Middlewares/roles.middleware.js';
+import rolesMiddleware, { deleteAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
 
 
 const { ok } = successStatusCodes;
@@ -13,7 +13,7 @@ export const router = express.Router();
 const authorizationRoles = ['user','admin']
 
 
-router.get("/:roleId/permissions",authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles) ,async (req, res, next) => {
+router.get("/:roleId/permissions",authenticateJwtToken,getAuthorize ,async (req, res, next) => {
   try {
     const {
       params: { roleId },
@@ -26,7 +26,7 @@ router.get("/:roleId/permissions",authenticateJwtToken,rolesMiddleware.authorize
   }
 });
 
-router.post("/:roleId/permissions/:permissionId",authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles) ,async (req, res, next) => {
+router.post("/:roleId/permissions/:permissionId",authenticateJwtToken,postAuthorize ,async (req, res, next) => {
   try {
     const {
       params: { roleId, permissionId },
@@ -42,7 +42,7 @@ router.post("/:roleId/permissions/:permissionId",authenticateJwtToken,rolesMiddl
 });
 
 router.delete(
-  "/:roleId/permissions/:permissionId",authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
+  "/:roleId/permissions/:permissionId",authenticateJwtToken,deleteAuthorize,async(req,res,next)=>{
     try {
       const {
         params: { roleId, permissionId },
