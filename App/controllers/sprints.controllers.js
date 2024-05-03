@@ -1,10 +1,17 @@
 import { verifyToken } from "../../common/utils.js";
 
-import {getAllSprints,getUserSprints,getSprintById,createSprintForUser,deleteSprintDb} from "../services/sprints.services.js"
-import { boardsMessages } from "../messages/boards.messages.js";
-import { result } from "@hapi/joi/lib/base.js";
+import {getAllSprints,getUserSprints,getSprintById,createSprintForUser,deleteSprintDb,checkBoardForThatUserExists} from "../services/sprints.services.js"
 
-const { board_fetched, conflict_message, unauthorized, board_created, board_updated, board_deleted, notFoundMessage, access_forbidden, bad_request, not_found } = boardsMessages
+import { sprintMessages } from "../messages/sprints.messages.js";
+
+
+
+
+const {
+    sprint_created,sprint_updated,sprint_deleted,unauthorized,not_found,access_forbidden,bad_request,no_content
+}=sprintMessages
+
+
 
 export const listAllSprints= async(req,res)=>{
     try{
@@ -57,22 +64,24 @@ export const adminSpecificSprint = async (req, res) => {
 }
 
 
-export const createSprint=async(req,res)=>{
+export const createSprint=async(createSprintBody,id,boardId)=>{
     try{
-        const {sprintName,startDate,endDate}=req.body;
+        const {sprintName,startDate,endDate}=createSprintBody
 
         if(sprintName=== undefined && startDate===undefined && endDate===undefined){
             throw bad_request;
         }
 
-        const  authHeader=req.headers["authorization"];
-        const decodedToken=verifyToken(authHeader);
-        const userId=decodedToken.data.id;
-        const boardId=req.params.boarId
-
-        await createSprintForUser(userId,boardId,sprintName,startDate,endDate);
+      const check= await checkBoardForThatUserExists(boardId,id)
+      if(check.result.length > 0){
+        await createSprintForUser(boardId,sprintName,startDate,endDate);
 
         return sprint_created;
+      } else{
+        throw unauthorized
+      }
+
+        
     }
     catch(error){
         throw error;
