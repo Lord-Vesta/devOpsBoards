@@ -1,29 +1,32 @@
 import { verifyToken } from "../common/utils.js";
 
+import { jwtUnauthenticatedMessages } from "../App/messages/jwt.messages.js";
+import { responseHandler } from "../common/handlers.js";
+
+const {JWT_INVALID,ENTER_JWT_TOKEN} = jwtUnauthenticatedMessages
+
 export const authenticateJwtToken = async (req,res,next)=>{
-    const authHeader = req.headers['authorization']
+    try {
+        const authHeader = req.headers['authorization']
     const result = await verifyToken(authHeader)
+
     res.locals = result.data;
-    // console.log("This is a result",result.data);
-    if(!authHeader){
-        res.status(401).json({
-            status:401,
-            message:"you are not authenticated to use please enter jwt token",
    
-        })
+    if(!authHeader){
+       res.status(ENTER_JWT_TOKEN.statusCode).send(new responseHandler(null,ENTER_JWT_TOKEN))
     }
     else{
         if(!result.success){
-            res.status(401).json({
-                status:401,
-                error:result.err,
-                message:"jwt token is invalid"
-            })
+            res.status(JWT_INVALID.statusCode).send(new responseHandler(null,JWT_INVALID))
         }
         else{
             next();
         }
     }
+    } catch (error) {
+        throw error;
+    }
+    
 
 }
 
