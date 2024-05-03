@@ -25,7 +25,7 @@ export const passwordComparing = async(password,hash)=>{
 export const generateJwtToken = async(result)=>{
     
     const payload = {
-        id: result.Id,
+        userId: result.Id,
         email: result.emailId,
         role: result.Role,
         isDeleted: result.isDeleted
