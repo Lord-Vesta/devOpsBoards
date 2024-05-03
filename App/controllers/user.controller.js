@@ -3,88 +3,61 @@ import {
   passwordComparing,
   passwordHashing,
 } from "../../common/utils.js";
-import { checkAlreadyPresent, signup } from "../services/users.services.js";
+import user from "../services/users.services.js";
+import { newMessage } from "../messages/user.messages.js";
 
-export const signupUser = (req, res) => {
-  try {
-    const roleId = 1;
-    const isdeleted = false;
-    const {
-      body: { emailId, password },
-    } = req;
-    checkAlreadyPresent(emailId, async function (result) {
-      if (result.length) {
-        res.status(409).json({
-          status: 409,
-          error: "Email already exists",
-          message:
-            "The email address provided is already registered. Please use a different email or proceed to login.",
-        });
-      } else {
-        const encPassword = await passwordHashing(password);
-        signup(
-          emailId,
-          encPassword,
-          roleId,
-          isdeleted,
-          async function (result) {
-            if (result) {
-              res.status(201).json({
-                status: 201,
-                message: "User has been successfully registered",
-              });
-            }
-          }
-        );
-      }
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 500,
-      error: "Server error",
-      message: err.message,
-    });
-  }
-};
+const { conflict_message, user_signup,unauthorized } = newMessage;
 
-export const loginUser = (req, res) => {
+const signupUser = async (req, res) => {
   try {
     const {
       body: { emailId, password },
     } = req;
+    const checkEmailAlreadyPresent = await user.checkAlreadyPresent(emailId);
+    if (checkEmailAlreadyPresent.result.length) {
+      throw conflict_message;
+    } else {
 
-    checkAlreadyPresent(emailId, async function (result) {
-      if (result.length) {
-        const hash = result[0].password;
-        const isCorrect = await passwordComparing(password, hash);
-        if (isCorrect) {
-          const token = await generateJwtToken(result[0]);
-          res.status(200).json({
-            status: 200,
-            message: "Login successful",
-            token: token,
-          });
-        } else {
-          res.status(401).json({
-            status: 401,
-            error: "Unauthorized",
-            message: "Incorrect username or password.",
-          });
-        }
-      } else {
-        res.status(401).json({
-          status: 401,
-          error: "Unauthorized",
-          message: "Incorrect username or password.",
-        });
-      }
-    });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ 
-        status: 500, 
-        error: "Server error", 
-        message: err.message });
+      const encodedPassword = await passwordHashing(password);
+      await user.signup(emailId, encodedPassword);
+      return user_signup;
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 };
+
+const loginUser = async (req, res) => {
+  try {
+    const {
+      body: { emailId, password },
+    } = req;
+    const userLogin = await user.login(emailId);
+    if (userLogin.result.length) {
+      const hashedPassword = userLogin.result[0].password;
+      const isCorrect = await passwordComparing(password, hashedPassword);
+      if (isCorrect) {
+        const token = await generateJwtToken(userLogin.result[0]);
+        return token;
+      } else {
+        throw unauthorized
+      }
+    }
+    else{
+      throw unauthorized
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export default {
+  signupUser,
+  loginUser,
+};
+
+
+
+
