@@ -20,7 +20,7 @@ const addRolesToUsers = async (req, res) => {
       params: { userId, roleId },
     } = req;
 
-    const rolesOfUser = UserRoles.getRolesOfUser(userId)
+    const rolesOfUser = await UserRoles.getRolesOfUser(userId)
 
     if(rolesOfUser.result.length){
       throw ROLE_OF_USER_ALREADY_EXISTS;

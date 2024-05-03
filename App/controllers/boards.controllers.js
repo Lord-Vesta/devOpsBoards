@@ -62,13 +62,11 @@ export const adminSpecificBoard = async (req, res) => {
 };
 
 
-export const createBoard = async (req, res) => {
+export const createBoard = async (createBoardBody,id) => {
     try {
-        const authHeader = req.headers["authorization"];
-        const decodedToken = verifyToken(authHeader);
-        const userId = decodedToken.data.id;
+       
 
-        let { title, assignedTo, state, type } = req.body;
+        let { title, assignedTo, state, type } = createBoardBody;
       
     
 
@@ -77,15 +75,15 @@ export const createBoard = async (req, res) => {
             throw bad_request
         }
 
-        state = state !== undefined ? state : "To do";
+        state = state  ? state : "To do";
         type = type !== undefined ? type : "Epic";
         assignedTo = assignedTo !== undefined ? assignedTo : "Unassigned";
-        console.log(assignedTo);
+        // console.log(assignedTo);
         if(assignedTo!==undefined){
             const result=  await checkUserExists(assignedTo);
             
             if( result.result.length > 0){
-                await createBoardForUser(userId, title, assignedTo, state, type);
+                await createBoardForUser(id, title, assignedTo, state, type);
                 return board_created;
             }
             else{
@@ -94,10 +92,10 @@ export const createBoard = async (req, res) => {
             }
         }
 
-        // await createBoardForUser(userId, title, assignedTo, state, type);
+        
 
 
-        // return board_created;
+
 
     } catch (error) {
         console.error("Error creating board:", error);
