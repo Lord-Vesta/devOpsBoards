@@ -3,7 +3,8 @@ import { verifyToken } from "../common/utils.js";
 export const authenticateJwtToken = async (req,res,next)=>{
     const authHeader = req.headers['authorization']
     const result = await verifyToken(authHeader)
-    res.locals = result;
+    res.locals = result.data;
+    // console.log("This is a result",result.data);
     if(!authHeader){
         res.status(401).json({
             status:401,

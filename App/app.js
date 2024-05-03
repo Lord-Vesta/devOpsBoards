@@ -10,7 +10,9 @@ import {router as permissionRoutes} from './routes/permission.routes.js'
 import {router as attachmentRoutes} from './routes/attachments.routes.js'
 import{router as rolePermissions} from './routes/permissionForRoles.routes.js'
 import {router as boardsRoutes} from "./routes/boards.routes.js";
-import { responseHandler } from "../common/handlers.js";
+import {router as sprintRoutes} from "./routes/sprint.routes.js"
+
+
 
 const app = express();
 
@@ -26,7 +28,8 @@ const routes = [
     { path: '/api/permissions', router: permissionRoutes },
     { path: '/api/boards', router: attachmentRoutes },
     { path: '/api/rolePermissions', router: rolePermissions },
-    { path: '/api/board',router: boardsRoutes}
+    { path: '/api/board',router: boardsRoutes},
+    {path:'/api/board',router:sprintRoutes}
   ];
   
 routes.forEach(route => {

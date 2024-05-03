@@ -1,17 +1,8 @@
 
 
-import { result } from "@hapi/joi/lib/base.js";
+
 import { db } from "../../connection.js";
 
-
-// const getSprints= async()=>{
-//     try{
-//         const [rows]=await db.promise.query(`select * from sprint where isDeleted=false`);
-//         return {result:rows};
-//     }catch(error){
-//         throw error;
-//     }
-// };
 
 const getAllSprints= async(boardId)=>{
     try{
@@ -36,7 +27,7 @@ const getSprintById=async(boardId,sprintId)=>{
 
 const getUserSprints=async(boardId,sprintId,userId)=>{
     try{
-        const [rows]=await db.promise.query(`SELECT s.sprintId, s.boardId, su.userId
+        const [rows]=await db.promise().query(`SELECT s.sprintId, s.boardId, su.userId
         FROM SprintUser su
         INNER JOIN sprint s ON su.sprintId = s.sprintId
         INNER JOIN BoardTable bt ON s.boardId = bt.boardId
@@ -53,8 +44,9 @@ const getUserSprints=async(boardId,sprintId,userId)=>{
 }
 
 
-const createSprintForUser = async (userId, boardId, sprintName, startDate, endDate) => {
-    console.log("Creating Sprint for user...");
+const createSprintForUser = async ( boardId, sprintName, startDate, endDate) => {
+    // console.log("Creating Sprint for user...");
+    
 
     try {
         if (sprintName === undefined && startDate === undefined && endDate === undefined) {
@@ -63,7 +55,7 @@ const createSprintForUser = async (userId, boardId, sprintName, startDate, endDa
 
         const newSprint = {
 
-            userId:userId,
+            // userId:userId,
             boardId: boardId,
             sprintName:sprintName,
             startDate:startDate,
@@ -71,12 +63,12 @@ const createSprintForUser = async (userId, boardId, sprintName, startDate, endDa
             isDeleted:false
         };
 
-        console.log("New sprint object: ", newSprint);
+        // console.log("New sprint object: ", newSprint);
 
         const [result] = await db.promise().query("insert into sprint set ?", newSprint
         );
 
-        console.log("Sprint created successfully:",result);
+        // console.log("Sprint created successfully:",result);
 
         const responseData={
             sprintName: newSprint.sprintName,
@@ -92,14 +84,26 @@ const createSprintForUser = async (userId, boardId, sprintName, startDate, endDa
     }
 };
 
+const checkBoardForThatUserExists=async(boardId,userId)=>{
+    try{
+        const [rows]=await db.promise().query(`select * from boardTable where boardId=? and userId=?`,[boardId,userId]
+    );
+    // console.log(boardId);
+    // console.log(userId);
+    return {result:rows}
+    }
+    catch(error){
+        throw error;
+    }
+}
 
 const checkSprintExists=async(boardId,sprintId)=>{
     try{
-        console.log(boardId);
-        console.log(sprintId);
+        // console.log(boardId);
+        // console.log(sprintId);
         const [rows]=await db.promise().query(`select * from sprint where boardId=? and sprintId=?`,[boardId,sprintId]
     );
-    console.log(rows);
+    // console.log(rows);
     return {result:rows}
     }
     catch(error){
@@ -121,6 +125,7 @@ export {
     getAllSprints,
     getSprintById,
     getUserSprints,
+    checkBoardForThatUserExists,
     createSprintForUser,
     checkSprintExists,
     deleteSprintDb

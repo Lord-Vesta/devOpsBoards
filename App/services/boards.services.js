@@ -166,6 +166,9 @@ const editBoardData = async (userId, newData) => {
           throw new Error("Type can only be an epic");
         }
       }
+
+      `update boardTable set `
+
     }
 
   
@@ -227,6 +230,9 @@ const deleteBoardDb=async(boardId,userId)=>{
     throw error
   }
 }
+
+
+
 
 export {
   getBoards,

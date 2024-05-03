@@ -34,7 +34,9 @@ router.get('/:Id',authenticateJwtToken,async (req,res,next)=>{
 
 router.post('/createBoard',authenticateJwtToken,async (req,res,next)=>{
     try{
-        const result=await createBoard(req,res)
+        const {body:createBoardBody} = req
+        const{locals:{id}}=res
+        const result=await createBoard(createBoardBody,id)
         res.status(result.statusCode).send(new responseHandler(result))
     } catch(error){
         next(error);
