@@ -8,16 +8,12 @@ import { newMessage } from "../messages/user.messages.js";
 
 const { conflict_message, user_signup,unauthorized } = newMessage;
 
-const signupUser = async (req, res) => {
+const signupUser = async (emailId, password) => {
   try {
-    const {
-      body: { emailId, password },
-    } = req;
     const checkEmailAlreadyPresent = await user.checkAlreadyPresent(emailId);
     if (checkEmailAlreadyPresent.result.length) {
       throw conflict_message;
     } else {
-
       const encodedPassword = await passwordHashing(password);
       await user.signup(emailId, encodedPassword);
       return user_signup;
@@ -28,11 +24,8 @@ const signupUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
+const loginUser = async (emailId, password) => {
   try {
-    const {
-      body: { emailId, password },
-    } = req;
     const userLogin = await user.login(emailId);
     if (userLogin.result.length) {
       const hashedPassword = userLogin.result[0].password;

@@ -15,19 +15,17 @@ export const router = express.Router();
 
 router.get('/',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
     try {
-        const listOfPermissions = await permissionContollers.listPermissions(req,res)
-
+        const listOfPermissions = await permissionContollers.listPermissions()
         res.status(ok).send(new responseHandler(listOfPermissions))
     } catch (error) {
-        // console.log(error);
         next(error);
     }
 });
 
 router.get('/:permissionId',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{ 
     try {
-        const listOfSpeificPermissions = await permissionContollers.specificPermission(req,res)
-
+        const {params:{permissionId}} = req
+        const listOfSpeificPermissions = await permissionContollers.specificPermission(permissionId)
         res.status(ok).send(new responseHandler(listOfSpeificPermissions))
     } catch (error) {
         next(error);
@@ -36,7 +34,8 @@ router.get('/:permissionId',authenticateJwtToken,rolesMiddleware.authorize(autho
 
 router.post('/',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),validateBody(addPermissionSchema),async(req,res,next)=>{
     try {
-        const permissionAddedResponse = await permissionContollers.addPermission(req,res)
+        const {body:{permission}} = req;
+        const permissionAddedResponse = await permissionContollers.addPermission(permission)
         res.status(permissionAddedResponse.statusCode).send(new responseHandler(permissionAddedResponse))
     } catch (error) {
         next(error)
@@ -45,7 +44,11 @@ router.post('/',authenticateJwtToken,rolesMiddleware.authorize(authorizationRole
 
 router.put('/:permissionId',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),validateBody(editPermission),async(req,res,next)=>{
     try {
-        const editPermissionResponse = await permissionContollers.editPermission(req,res)
+        const {
+            params: { permissionId },
+            body: { permission },
+          } = req;
+        const editPermissionResponse = await permissionContollers.editPermission(permissionId,permission)
         res.status(editPermissionResponse.statusCode).send(new responseHandler(editPermissionResponse))
     } catch (error) {
         next(error)
@@ -55,7 +58,10 @@ router.put('/:permissionId',authenticateJwtToken,rolesMiddleware.authorize(autho
 
 router.delete('/:permissionId',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
     try {
-        const editPermissionResponse = await permissionContollers.deletePermission(req,res)
+        const {
+            params: { permissionId },
+          } = req;
+        const editPermissionResponse = await permissionContollers.deletePermission(permissionId)
         res.status(editPermissionResponse.statusCode).send(new responseHandler(editPermissionResponse))
     } catch (error) {
         next(error)

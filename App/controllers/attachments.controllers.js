@@ -3,16 +3,15 @@ import streamifier from "streamifier";
 import { v2 as cloudinary } from "cloudinary";
 import attachmentsServices from "../services/attachments.services.js";
 import { attachmentMessages } from "../messages/attachment.messages.js";
-import { Cloudinary } from "../../connection.js";
 
 const { ATTACHMENT_DELETED_SUCCESSFULLY,
   ATTACHMENT_NOT_FOUND } = attachmentMessages;
 
 
 
-const addAttachments = async (req, res) => {
+const addAttachments = async (file,taskId) => {
   try {
-    const streamUpload = async(req) => {
+    const streamUpload = async(file) => {
       console.log("inside stream upload");
       return new Promise((resolve, reject) => {
         let stream = cloudinary.uploader.upload_stream((error, result) => {
@@ -23,14 +22,13 @@ const addAttachments = async (req, res) => {
           }
         });
 
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
+         streamifier.createReadStream(file.buffer).pipe(stream);
       })
     
     };
 
-    async function upload(req) {
-      const result = await streamUpload(req);
-      const taskId = req.params.taskId;
+    async function upload(file,taskId) {
+      const result = await streamUpload(file);
       const Url = result.secure_url;
 
       const addAttachmentResult = await attachmentsServices.addAttachments(taskId, Url);
@@ -39,7 +37,7 @@ const addAttachments = async (req, res) => {
       }
       
     }
-    const uploadResult = await upload(req);
+    const uploadResult = await upload(file,taskId);
     return uploadResult;
   } catch (error) {
     console.log(error);
@@ -47,9 +45,8 @@ const addAttachments = async (req, res) => {
   }
 };
 
-const getAttachments = async (req, res) => {
+const getAttachments = async (taskId) => {
   try {
-    const taskId = req.params.taskId;
     const getAttachmentsResult = await attachmentsServices.getAttachments(
       taskId
     );
@@ -60,12 +57,8 @@ const getAttachments = async (req, res) => {
   }
 };
 
-const getSpecificAttachments = async (req, res) => {
+const getSpecificAttachments = async (taskId,attachmentId) => {
   try {
-    const {
-      params: { taskId, attachmentId },
-    } = req;
-
     const getSpecificAttachmentsResult =
       await attachmentsServices.getSpecificAttachments(taskId, attachmentId);
 
@@ -76,11 +69,8 @@ const getSpecificAttachments = async (req, res) => {
   }
 };
 
-const deleteAttachments = async (req, res) => {
+const deleteAttachments = async (taskId,attachmentId) => {
   try {
-    const {
-      params: { taskId, attachmentId },
-    } = req;
   
     const getSpecificAttachments = await attachmentsServices.getSpecificAttachments(taskId,attachmentId)
   

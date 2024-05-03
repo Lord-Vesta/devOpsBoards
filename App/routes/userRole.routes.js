@@ -13,7 +13,8 @@ const authorizationRoles = ['user','admin']
 
 router.get('/:UserId/roles',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
     try {
-        const rolesOfUserList = await userRoleControllers.getRolesOfUser(req,res)
+        const {params:{UserId}} = req;
+        const rolesOfUserList = await userRoleControllers.getRolesOfUser(UserId)
         res.status(ok).send(new responseHandler(rolesOfUserList))
     } catch (error) {
         next(error);
@@ -22,19 +23,25 @@ router.get('/:UserId/roles',authenticateJwtToken,rolesMiddleware.authorize(autho
 
 router.post('/:userId/roles/:roleId',authenticateJwtToken,rolesMiddleware.authorize(authorizationRoles),async(req,res,next)=>{
     try {
-        const addRolesToUserResponse = await userRoleControllers.addRolesToUsers(req,res);
+        const {
+            params: { userId, roleId },
+          } = req;
+        const addRolesToUserResponse = await userRoleControllers.addRolesToUsers(userId,roleId);
         
         res.status(addRolesToUserResponse.statusCode).send(new responseHandler(addRolesToUserResponse))
         
     } catch (error) {
-        
+        next(error)
     }
 }
 )
 
 router.delete('/:userId/roles/:roleId',authenticateJwtToken,async(req,res,next)=>{
     try{
-        const deletedRolesResponse =await userRoleControllers.deleteRoleofUser(req,res)
+    const {
+        params: { userId, roleId },
+      } = req;
+        const deletedRolesResponse =await userRoleControllers.deleteRoleofUser(userId, roleId)
 
     res.status(deletedRolesResponse.statusCode).send(deletedRolesResponse)
     }catch(error){

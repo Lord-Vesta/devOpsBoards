@@ -9,7 +9,7 @@ const {
   PERMISSION_DELETED_SUCCESSFULLY,
 } = permissionMessages;
 
-const listPermissions = async (req, res) => {
+const listPermissions = async () => {
   try {
     const listOfPermissions = await permissionServices.listPermissions();
     return listOfPermissions.result;
@@ -19,11 +19,8 @@ const listPermissions = async (req, res) => {
   }
 };
 
-const specificPermission = async (req, res) => {
+const specificPermission = async (permissionId) => {
   try {
-    const {
-      params: { permissionId },
-    } = req;
     const listOfSpeificPermissions =
       await permissionServices.specificPermission(permissionId);
     return listOfSpeificPermissions.result;
@@ -33,12 +30,8 @@ const specificPermission = async (req, res) => {
   }
 };
 
-const addPermission = async (req, res) => {
+const addPermission = async (permission) => {
   try {
-    const {
-      body: { permission },
-    } = req;
-
     const permissionExists = await permissionServices.searchBypermissions(
       permission
     );
@@ -54,33 +47,34 @@ const addPermission = async (req, res) => {
   }
 };
 
-const editPermission = async (req, res) => {
+const editPermission = async (permissionId, permission) => {
   try {
-    const {
-      params: { permissionId },
-      body: { permission },
-    } = req;
-
-    const permissionExistsResult = await permissionServices.specificPermission(
-      permissionId
-    );
-    if (permissionExistsResult.result.length) {
-      await permissionServices.editPermission(permissionId, permission);
-      return PERMISSION_EDITTED_SUCCESSFULLY;
-    } else if (!permissionExistsResult.result.length) {
-      throw PERMISSION_NOT_FOUND;
-    }
+    const permissionExists = await permissionServices.searchBypermissions(
+      permission)
+      if (permissionExists.result.length) {
+        throw PERMISSION_ALREADY_EXISTS;
+      }
+      else{
+        const permissionExistsResult = await permissionServices.specificPermission(
+          permissionId
+        );
+        if (permissionExistsResult.result.length) {
+          await permissionServices.editPermission(permissionId, permission);
+          return PERMISSION_EDITTED_SUCCESSFULLY;
+        } else if (!permissionExistsResult.result.length) {
+          throw PERMISSION_NOT_FOUND;
+        }
+      }
+    
   } catch (error) {
     console.log(error);
     throw error;
   }
 };
 
-const deletePermission = async (req, res) => {
+const deletePermission = async (permissionId) => {
   try {
-    const {
-      params: { permissionId },
-    } = req;
+
     const permissionExistsResult = await permissionServices.specificPermission(
       permissionId
     );
