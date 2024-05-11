@@ -1,14 +1,14 @@
 
-
-
 import { db } from "../../connection.js";
+
+
 
 const getBoards = async () => {
   try {
     const [rows] = await db.promise().query(
       `SELECT * FROM BoardTable WHERE isDeleted = false`
     );
-    return { result: rows };
+    return {result: rows };
   } catch (error) {
     throw { error };
   }
@@ -16,9 +16,11 @@ const getBoards = async () => {
 
 const getUserBoard = async (userId) => {
   try {
-    // console.log(userId);
+ 
     const [rows] = await db.promise().query(
-      `SELECT * FROM BoardTable WHERE userId = ? AND isDeleted = false`,
+      `SELECT bt.* FROM BoardTable bt
+      INNER JOIN boardUser bu ON bt.boardId = bu.boardId
+      WHERE bu.userId = ? AND bt.isDeleted = false`,
       [userId]
     );
     return { result: rows };
@@ -29,6 +31,7 @@ const getUserBoard = async (userId) => {
 
 const getBoardById = async (boardId) => {
   try {
+
     const [rows] = await db.promise().query(
       `SELECT * FROM BoardTable WHERE boardId = ? AND isDeleted = false`,
       [boardId]
@@ -40,175 +43,210 @@ const getBoardById = async (boardId) => {
 };
 
 
+const getUserEmail=async(userId)=>{
+  try{
+      
+      const email=await db.promise().query(`select emailID from userTable where Id=?`,[userId])
+     
+      return {result:email}   
+  }catch(error){
+      throw error
+  }
+}
+
+
 const checkUserExists=async(assignedTo)=>{
   try{
-    const [rows]=await db.promise().query(`select * from usertable where emailId ="${assignedTo}"`);
-    console.log(assignedTo);
-    console.log(rows);
-    return {result:rows}
+    
+    const [userId]=await db.promise().query(`select Id from usertable where emailId = ?`,[assignedTo]);
+    
+    return {result:userId}
   }
   catch(error){
     throw {error};
   }
 }
 
-const createBoardForUser = async (userId, title, assignedTo, state, type) => {
-    console.log("Creating board for user...");
+const checkEmail=async(assignedTo)=>{
+  try{
     
+    const [email]=await db.promise().query(`select emailId from userTable where emailId='${assignedTo}'`);
+    
+    return {result:email}
+  }catch(error){
+    throw {error};
+  }
+}
+
+
+
+
+const createBoardByAdminDb=async(userId,title,assignedTo,state,type)=>{
+  try{
+    const newBoard = {
+      userId: userId,
+      title: title,
+      assignedTo: assignedTo,
+      state: state,
+      type: type,
+      isDeleted: false 
+  };
+
+
+  
+  const [Adminresult] = await db.promise().query(
+      "INSERT INTO BoardTable SET ?",
+      newBoard
+  );
+  if(Adminresult.affectedRows){
+    const boardId=Adminresult.insertId;
+
+    const [result]=await db.promise().query(`insert into boardUser(boardId,userId,isDeleted) values(?,?,?)`,[boardId,userId,false]
+  );
+  if(result.affectedRows){
+    return{error:null,Mainresult:Adminresult,result};
+  }
+
+  }
+  }catch(error){
+    throw error;
+  }
+}
+
+
+
+const createBoardForUser = async (userId, title, email, state, type) => {
+ 
+    console.log(userId, title, email, state, type);
     try {
-        if (!title || title.trim() === '') {
-            console.error("Title is required.");
-            return { error: new Error('Title is required') };
-        }
-
-        console.log("Input parameters validated.");
-        
-    
-        // assignedTo = assignedTo !== undefined ? assignedTo : "Unassigned";
-        // state = state !== undefined ? state : "To do";
-        // type = type !== undefined ? type : "Epic";
-
-        // console.log("Default values set.");
-
-        
-
        
         const newBoard = {
             userId: userId,
             title: title,
-            assignedTo: assignedTo,
+            assignedTo: email,
             state: state,
             type: type,
             isDeleted: false 
         };
 
-        console.log("New board object:", newBoard);
 
         
-        const [result] = await db.promise().query(
+        const [boardResult] = await db.promise().query(
             "INSERT INTO BoardTable SET ?",
             newBoard
         );
 
-        console.log("Board created successfully:", result);
+        if(boardResult.affectedRows){
+          const boardId=boardResult.insertId;
+          const [result]=await db.promise().query(`insert into boardUser(boardId,userId,isDeleted)values(?,?,?)`,[boardId,userId,false]
+        );
+        if(result.affectedRows){
+          return{error:null,Mainresult:boardResult,result};
+        }
+        }
 
-        
-        const responseData = {
-            title: newBoard.title,
-            assignedTo: newBoard.assignedTo,
-            state: newBoard.state,
-            type: newBoard.type,
-            isDeleted: newBoard.isDeleted 
-        };
-
-        return { result: responseData };
+       
     } catch (error) {
         console.error("Error creating board:", error);
         throw { error };
     }
 };
 
+const addAuserToAExistingBoardDb=async(userId,boardId)=>{
+  try{
+
+  const [boardResult]=await db.promise().query(`INSERT INTO boardUser (boardId,userId,isDeleted) VALUES (?, ?,?)`,[boardId,userId,false]
+
+);
+  return{result:boardResult}
+
+  }
+  catch(error){
+    throw (error)
+  }
+}
 
 
-// const editBoardData=async (userId,newData={})=>{
-//   try{
-//    let sql='update BoardTable SET ';
-//    let updates=[];
+const getMembersofSpecificBoardAdmin=async(boardId)=>{
+  try{
+    const [memberResult]=await db.promise().query(`SELECT DISTINCT u.emailId
+    FROM boarduser bu
+    JOIN UserTable u ON bu.userId = u.Id
+    WHERE bu.boardId = ? AND u.isDeleted = false;
+    ;
+    `,boardId);
+    return {result:memberResult}
 
-//    if(newData.title !==undefined){
-//     updates.push(`title ='${newData.title}'`)
-//    }
-//    else if(newData.assignedTo !== undefined){
-//     updates.push(`assignedTo = '${newData.assignedTo}'`);
-//    }
-//    else if(newData.state !== undefined){
-//     updates.push(`state= ${newData.state}`);
-//    }
-//    else if(newData.type !== "Epic"){
-//     throw new Error("Type can only be an epic");
-//    }
+  }catch(error){
+    throw error
+  }
+}
 
-//    else if(updates.length===0){
-//     return 'No updates were made';
-//    }
+const getMembersofSpecificBoardDb=async(userId,boardId)=>{
+  try{
+    const[memberResult]=await db.promise().query(`SELECT DISTINCT u.emailId
+    FROM boarduser bu
+    JOIN boarduser bu2 ON bu.boardId = bu2.boardId
+    JOIN UserTable u ON bu2.userId = u.Id
+    WHERE bu.userId = ? AND bu.boardId = ? AND u.isDeleted = false;
+    ;
+    `,[userId,boardId]
+  );
+  return{result:memberResult}
+  }catch(error){
+    throw error
+  }
+}
 
-//    sql += updates.join(', ');
-//    sql += ` WHERE userId = ${userId}`;
-   
-//    const [result] = await db.promise().query(sql);
-//    console.log('Board data updated successfully');
-//    return result;
 
-//   }
-//   catch(error){
-//     console.error('Error updating board data:', error);
-//     throw error;
-//   }
-// }
-
-const editBoardData = async (userId, newData) => {
+const editBoardDbAdmin = async (requiredColumns, boardId) => {
   try {
-    console.log("Updating board data...");
+    let sql = `update boardTable set `;
 
-    let sql = 'UPDATE BoardTable SET ';
-    let updates = [];
-
-    for (const key in newData) {
-      if (newData.hasOwnProperty(key)) {
-       
-        if (key === 'title') {
-          updates.push(`title = '${newData[key]}'`);
-        } else if (key === 'assignedTo') {
-          updates.push(`assignedTo = '${newData[key]}'`);
-        } else if (key === 'state') {
-          updates.push(`state = '${newData[key]}'`);
-        } else if (key === 'type' && newData[key] !== "Epic") {
-          throw new Error("Type can only be an epic");
-        }
-      }
-
-      `update boardTable set `
-
+    for (let column in requiredColumns) {
+      sql += `${column} = '${requiredColumns[column]}', `;
     }
 
-  
-    if (updates.length === 0) {
-      console.log('No updates were made');
-      return { result: 'No updates were made' };
-    }
+    sql = sql.slice(0, -2); 
+    sql += ` where boardId=${boardId};`;
 
-    sql += updates.join(', ');
-
-    sql += ` WHERE userId = ${userId}`;
-
-    const [result] = await db.promise().query(sql);
-    console.log('Board data updated successfully');
-
-
-    const responseData = {
-      title: newData.title !== undefined ? newData.title : result.title,
-      assignedTo: newData.assignedTo !== undefined ? newData.assignedTo : result.assignedTo,
-      state: newData.state !== undefined ? newData.state : result.state,
-      type: newData.type !== undefined ? newData.type : result.type,
-      isDeleted: result.isDeleted 
-    };
-
-    return { result: responseData };
+    const [UpdateResult] = await db.promise().query(sql);
+    return { result: UpdateResult };
   } catch (error) {
-    console.error('Error updating board data:', error);
-    throw { error };
+    throw error;
   }
 };
 
+
+const editBoardDb = async (requiredColumns, userId, boardId) => {
+  try {
+    let sql = `update boardTable set `; 
+
+    for (let column in requiredColumns) {
+      sql += `${column} = '${requiredColumns[column]}', `;
+    }
+    sql = sql.slice(0, -2); 
+    sql += ` where userId=${userId} and boardId=${boardId};`; 
+    const [UpdateResult] = await db.promise().query(sql);
+  
+    
+    return { result: UpdateResult };
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+
 const checkBoardExistforUser=async(boardId,userId)=>{
   try{
-    console.log(boardId);
-    console.log(userId);
+
     const [rows] = await db.promise().query(
       `SELECT * FROM BoardTable WHERE boardId=? AND userId=?`,
       [boardId, userId]
     );
-    console.log(rows);
+
   
   return {result:rows}
   }
@@ -217,6 +255,39 @@ const checkBoardExistforUser=async(boardId,userId)=>{
   }
 }
 
+const checkBoardExistAdmin=async(boardId)=>{
+  try{
+    const [rows]=await db.promise().query(`select * from boardTable where boardId=?`,[boardId]
+
+    );
+    return {result:rows}
+  }catch(error){
+    throw error
+  }
+
+}
+
+const checkBoardExist=async(userId,boardId)=>{
+  try{
+    
+    const [rows]=await db.promise().query(`select * from boardTable where userId=? and boardId=? `,[userId,boardId]
+    );
+
+    return{result:rows}
+  }
+  catch(error){
+    throw error;
+  }
+}
+
+const deleteBoardDbForAdmin=async(boardId)=>{
+  try{
+    const [rows]=await db.promise().query(`update boardTable set isDeleted=true where boardId=?`,[boardId])
+    return {result:rows}
+  } catch(error){
+    throw error;
+  }
+}
 
 const deleteBoardDb=async(boardId,userId)=>{
   try{
@@ -224,7 +295,9 @@ const deleteBoardDb=async(boardId,userId)=>{
     const [rows]=await db.promise().query(`UPDATE BoardTable
     SET isDeleted = true
     WHERE boardId = ? AND userID = ?`,[boardId,userId]);
+   
     return {result:rows}
+    
   }
   catch(error){
     throw error
@@ -238,10 +311,20 @@ export {
   getBoards,
   getUserBoard,
   getBoardById,
+  getUserEmail,
   checkUserExists,
+  checkBoardExistAdmin,
+  checkBoardExist,
+  checkEmail,
+  createBoardByAdminDb,
   createBoardForUser,
-  editBoardData,
+  addAuserToAExistingBoardDb,
+  getMembersofSpecificBoardAdmin,
+  getMembersofSpecificBoardDb,
+  editBoardDbAdmin,
+  editBoardDb,
   checkBoardExistforUser,
+  deleteBoardDbForAdmin,
   deleteBoardDb
 };
 

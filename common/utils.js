@@ -25,7 +25,7 @@ export const passwordComparing = async(password,hash)=>{
 export const generateJwtToken = async(result)=>{
     
     const payload = {
-        id: result.Id,
+        userId: result.Id,
         email: result.emailId,
         role: result.Role,
         isDeleted: result.isDeleted
@@ -49,6 +49,7 @@ export const validateBody=(schema)=>{
     return(req,res,next)=>{
         // console.log(schema);
         const {error} = schema.validate(req.body)
+        // console.log(error);
     if(error){
         // console.log(error.details[0].message);
         throw new messageHandler(badRequest,error.details[0].message)

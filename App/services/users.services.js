@@ -41,7 +41,9 @@ const signup = async (emailId, password) => {
         `insert into UserTable (emailID,password,isDeleted) values (?,?,?)`,
         [emailId, password, false]
       );
+      console.log("This is userResult",userResult);
     if (userResult.affectedRows) {
+      
       const userId = userResult.insertId;
       const [roleResult] = await db
         .promise()

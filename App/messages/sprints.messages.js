@@ -6,7 +6,7 @@ import { messageHandler } from "../../common/handlers.js";
 
 const{badRequestMessage,unauthorizedMessage,forbiddenMessage,notFoundMessage,conflictMessage} = errorMessages
 
-const {createdMessage,updatedMessage,deletedMessage,loginSuccessMessage,noContentMessage} = successMessages
+const {createdMessage,updatedMessage,deletedMessage,loginSuccessMessage,noContentMessage,userAddedToExistingSprint} = successMessages
 
 const {badRequest,unauthorized,forbidden,notFound,methodNotAllowed,conflict} = errorStatusCodes
 
@@ -29,6 +29,8 @@ export const sprintMessages={
     bad_request:new messageHandler(badRequest,badRequestMessage),
 
     no_content:new messageHandler(noContent,noContentMessage),
+    
+    user_added_to_sprint:new messageHandler(ok,userAddedToExistingSprint)
 
 }
 
