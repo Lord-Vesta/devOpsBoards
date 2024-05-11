@@ -58,7 +58,6 @@ export const editRole = async (Id, Role) => {
         Role,
         Id,
       ]);
-
     return { error: null, result: result };
   } catch (error) {
     throw error;
