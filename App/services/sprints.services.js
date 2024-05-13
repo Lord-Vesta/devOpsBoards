@@ -28,6 +28,7 @@ const getSprintById = async (boardId, sprintId) => {
 
 const getUserSprints = async (boardId,userId) => {
     try {
+        
         const [rows] = await db.promise().query(
        
         `SELECT s.sprintId, s.boardId, s.sprintName, s.startDate, s.endDate
@@ -119,7 +120,6 @@ const createSprintForUser = async (sprintName, startDate, endDate, boardId, user
 
 const checkBoardForThatUserExists = async (boardId, userId) => {
     try {
-        console.log(boardId,userId);
         const [rows] = await db.promise().query(`select * from boardTable where boardId=? and userId=? and isDeleted=false`, [boardId, userId]
         );
         
@@ -132,7 +132,7 @@ const checkBoardForThatUserExists = async (boardId, userId) => {
 
 const checkSprintExistsAdmin = async (sprintId) => {
     try {
-
+   
         const [rows] = await db.promise().query(`select * from sprint where sprintId=? and isDeleted=false`, sprintId)
         
         return { result: rows }
@@ -185,7 +185,7 @@ const createSprintByAdminDb = async (Id, boardId, sprintName, startDate, endDate
 }
 
 const checkSprintExists = async (sprintId, userId) => {
-    
+  
     try {
 
         const [rows] = await db.promise().query(`SELECT s.*
@@ -265,12 +265,15 @@ const editSprintDb = async (requiredColumns,sprintId) => {
     }
 }
 
-const deleteSprintDb = async (sprintId) => {
+const deleteSprintDb = async (boardId,sprintId,userId) => {
     try {
+        
         const [deleteSprintResult] = await db.promise().query(`update sprint
         set isDeleted=true where  sprintId=?
         `, [sprintId]
+    
         );
+    
         if (deleteSprintResult.affectedRows) {
          
             const [result] = await db.promise().query(`UPDATE SprintUser 

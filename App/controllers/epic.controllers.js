@@ -59,6 +59,7 @@ export const createEpic = async (createEpicBody, sprintId, userId) => {
                 if (resultEmail.result.length) {
 
                         const email = resultEmail.result[0][0].emailID;
+                        
                         await createEpicForUser(epicName, email, description, startDate, targetDate, state, sprintId, userId);
                         return epic_created
                     
@@ -134,7 +135,7 @@ export const updateEpicAdmin = async (requiredColumns, role, epicId) => {
                 const ifUserExists = await checkUserExists(assignedTo);
 
                 if (ifUserExists.result.length) {
-                    const userId = ifUserExists.result[0].Id
+                    // const userId = ifUserExists.result[0].Id
 
                     const ifEpicExists = await checkEpicExistsAdmin(epicId)
                     if (ifEpicExists.result.length) {
@@ -165,7 +166,7 @@ export const deleteEpic = async (role, userId, epicId) => {
         if (role === "admin") {
             const ifEpicExists = await checkEpicExistsAdmin(epicId)
             if (ifEpicExists.result.length) {
-                await deleteEpicUser(epicId)
+                await deleteEpicDb(epicId)
                 return epic_deleted;
             } else {
                 throw epic_not_found

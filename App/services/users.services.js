@@ -16,7 +16,7 @@ const checkAlreadyPresent = async (emailId) => {
 };
 
 const login = async (emailId) => {
-  console.log(emailId);
+
   try {
     const [result] = await db.promise().query(
       `SELECT u.emailID,u.password, u.Id,u.isDeleted, r.Role
