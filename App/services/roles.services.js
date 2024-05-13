@@ -69,7 +69,6 @@ export const removeRole = async (Id) => {
     const [result] = await db
       .promise()
       .query(`update Roles set isDeleted = true where Id = ?`, [Id]);
-    // console.log(result.affectedRows);
     if (result.affectedRows) {
       const roleId = Id;
       const userRoleDelete = await db
@@ -77,7 +76,6 @@ export const removeRole = async (Id) => {
         .query(`update RolesForUsers set isDeleted = true where roleId = ?`, [
           roleId,
         ]);
-      // console.log("userRoleDelete");
       return { error: null, result: result, userRoleDelete };
     } else {
       throw {

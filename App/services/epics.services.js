@@ -47,7 +47,6 @@ const getMembersofSpecificEpicDb=async(epicId)=>{
 
 const getMembersOfSpecificEpicUser=async(epicId,userId)=>{
     try{
-        console.log(epicId,userId);
         const [rows]=await db.promise().query(`SELECT u.emailId
         FROM epicuser AS eu
         JOIN userTable AS u ON eu.userId = u.Id
@@ -117,10 +116,7 @@ const createEpicForUserFromAdmin=async(sprintId, epicName, assignedTo, descripti
         );
        
         if(EpicResult.affectedRows){
-            console.log("Inside era");
             const epicId=EpicResult.insertId;
-
-            console.log(epicId,userId);
             const [result]=await db.promise().query(`insert into epicUser(epicId,userId,isDeleted) values(?,?,?)`,[epicId,userId,false]
             
         );
@@ -139,7 +135,6 @@ const createEpicForUserFromAdmin=async(sprintId, epicName, assignedTo, descripti
 
 const getUserEmail=async(userId)=>{
     try{
-        console.log(userId);
         const email=await db.promise().query(`select emailID from userTable where Id=?`,[userId])
        
         return {result:email}   
@@ -166,12 +161,10 @@ const createEpicForUser=async(epicName,email,description,startDate,targetDate,st
 
         const[EpicResult]=await db.promise().query(`insert into epic set ?`,newEpic);
         if(EpicResult.affectedRows){
-            console.log("er");
             const epicId=EpicResult.insertId;
             const [result]=await db.promise().query(`insert into epicUser(epicId,userId,isDeleted) values(?,?,?)`,[epicId,userId,false]
             
         );
-        console.log(result);
         if(result.affectedRows){
             return {error:null,Mainresult:EpicResult,result};
         }

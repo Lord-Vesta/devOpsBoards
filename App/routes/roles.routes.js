@@ -6,7 +6,9 @@ import { deleteAuthorize, editAuthorize, getAuthorize, postAuthorize } from '../
 import{successStatusCodes} from '../../constants/statusCodes.js'
 import { responseHandler } from '../../common/handlers.js';
 import { validateBody } from '../../common/utils.js';
+import { roleRoutes } from '../../constants/routes.constants.js';
 
+const {GETALLROLES,GETSPECIFICROLE,ADDROLE,DELETEROLE,UPDATEROLE} = roleRoutes
 
 const {insertRolesSchema,updateRolesSchema} = rolesValidator
 
@@ -15,7 +17,7 @@ const {ok} = successStatusCodes
 export const roleRouter = express.Router();
 
 
-roleRouter.get('/',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
+roleRouter.get(GETALLROLES,authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     try{
         const listOfRolesResponse = await rolesRoutes.listRoles()
         res.status(ok).send(new responseHandler(listOfRolesResponse))
@@ -24,7 +26,7 @@ roleRouter.get('/',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     }
 })
 
-roleRouter.get('/:roleId',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
+roleRouter.get(GETSPECIFICROLE,authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     try{
         const {
             params: { roleId },
@@ -36,7 +38,7 @@ roleRouter.get('/:roleId',authenticateJwtToken,getAuthorize,async(req,res,next)=
     }
 })
 
-roleRouter.post('/',authenticateJwtToken,postAuthorize,
+roleRouter.post(ADDROLE,authenticateJwtToken,postAuthorize,
 validateBody(insertRolesSchema),async(req,res,next)=>{
     try {
         const {
@@ -45,11 +47,12 @@ validateBody(insertRolesSchema),async(req,res,next)=>{
         const roleAddedResponse = await rolesRoutes.insertRoles(Role);
         res.status(roleAddedResponse.statusCode).send(new responseHandler(roleAddedResponse))
     } catch (error) {
+        console.log("error 3",error);
         next(error)
     }
 })
 
-roleRouter.put('/:roleId',authenticateJwtToken,editAuthorize,
+roleRouter.put(UPDATEROLE,authenticateJwtToken,editAuthorize,
 validateBody(updateRolesSchema),async(req,res,next)=>{
     try {
         const { body:{Role},params:{roleId} } = req
@@ -60,7 +63,7 @@ validateBody(updateRolesSchema),async(req,res,next)=>{
     }
 })
 
-roleRouter.delete('/:roleId',authenticateJwtToken,deleteAuthorize,async(req,res,next)=>{
+roleRouter.delete(DELETEROLE,authenticateJwtToken,deleteAuthorize,async(req,res,next)=>{
     try {
         const {params:{roleId}} = req;
         const roleDeleted = await rolesRoutes.deleteRole(roleId)

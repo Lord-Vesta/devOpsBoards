@@ -10,7 +10,7 @@ export const dbobj = {
 };
 
 export const cloudobj = {
-    cloud_name: 'doryfkoj2', 
-    api_key: '188848899426429', 
-    api_secret: 'x2i9z2XCara1ZBYUuC43DE1Nqi4' 
+    cloud_name: process.env.CLOUD_NAME, 
+    api_key: process.env.API_KEY, 
+    api_secret: process.env.API_SECRET 
 }

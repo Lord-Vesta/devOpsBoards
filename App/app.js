@@ -10,9 +10,11 @@ import{router as rolePermissions} from './routes/permissionForRoles.routes.js'
 import {router as boardsRoutes} from "./routes/boards.routes.js";
 import {router as sprintRoutes} from "./routes/sprint.routes.js";
 import {router as epicRoutes} from "./routes/epics.routes.js"
-
+import { routesConstant } from "../constants/routes.constants.js";
 import {router as UserStoryRoutes} from './routes/userStory.routes.js'
 import { responseHandler } from "../common/handlers.js";
+
+const {USERROUTES,ROLEROUTER,USERROLEROUTES,PERMISSIONROUTES,ATTACHMENTROUTES,ROLEPERMISSIONS,BOARDSROUTES,SPRINTROUTES,EPICROUTES,USERSTORYROUTES} = routesConstant
 
 
 
@@ -24,16 +26,16 @@ app.use(cors());
 app.use(helmet());
 
 const routes = [
-    { path: '/api/user', router: userRoutes },
-    { path: '/api/roles', router: roleRouter },
-    { path: '/api/users', router: userRoleRoutes },
-    { path: '/api/permissions', router: permissionRoutes },
-    { path: '/api/boards', router: attachmentRoutes },
-    { path: '/api/rolePermissions', router: rolePermissions },
-    { path: '/api/board',router: boardsRoutes},
-    {path:'/api/board/sprint',router:sprintRoutes},
-    {path:'/api/board/epic',router:epicRoutes},
-    {path:'/api/board/userStory',router:UserStoryRoutes}
+    { path: USERROUTES, router: userRoutes },
+    { path: ROLEROUTER, router: roleRouter },
+    { path: USERROLEROUTES, router: userRoleRoutes },
+    { path: PERMISSIONROUTES, router: permissionRoutes },
+    { path: ATTACHMENTROUTES, router: attachmentRoutes },
+    { path: ROLEPERMISSIONS, router: rolePermissions },
+    { path: BOARDSROUTES,router: boardsRoutes},
+    {path:SPRINTROUTES,router:sprintRoutes},
+    {path: EPICROUTES,router:epicRoutes},
+    {path: USERSTORYROUTES,router:UserStoryRoutes}
   ];
   
 routes.forEach(route => {
@@ -43,7 +45,6 @@ app.use(route.path, route.router);
 
 app.use((error,req,res,next)=>{
   res.status(error.statusCode || 500).send(new responseHandler(null,error.message))
-
 })
   
 export default app;

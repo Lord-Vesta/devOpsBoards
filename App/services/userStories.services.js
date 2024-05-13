@@ -12,7 +12,6 @@ const listAlluserStory = async () => {
 
 const listUsersUstory = async (epicId, userId) => {
     try {
-        console.log();
         const [rows] = await db.promise().query(`SELECT userstories.*
         FROM userstories
         JOIN userstoryusers ON userstories.userStoryId = userstoryusers.userStoryId
@@ -47,7 +46,6 @@ const getMembersOfSpecificUserStoryDb = async (userstoryId) => {
 
 const getMemberSpecificUS = async (userstoryId, userId) => {
     try {
-        console.log(userstoryId,userId);
         const [rows] = await db.promise().query
             (`SELECT userTable.Id AS userId, userTable.emailId
             FROM userTable
@@ -155,7 +153,6 @@ const checkUserStoryExists=async(userStoryId,userId)=>{
 
 const checkUserExists=async(userId,epicId)=>{
     try{
-        console.log(userId,epicId);
         const [rows]=await db.promise().query(`select * from epicuser where userId=? and epicId=?`,[userId,epicId])
         return {result:rows}
     }catch(error){

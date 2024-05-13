@@ -2,16 +2,17 @@ import express from 'express';
 import userRoleControllers from '../controllers/userRoles.controllers.js';
 import { authenticateJwtToken } from '../../Middlewares/jwtAuthMiddleware.js';
 import {responseHandler} from '../../common/handlers.js'
-import rolesMiddleware, { deleteAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
-
+import { deleteAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
+import { userRoleRoutes } from '../../constants/routes.constants.js';
 import {successStatusCodes} from '../../constants/statusCodes.js'
 
 const {ok} = successStatusCodes;
+const {GETUSERROLES,ADDUSERROLE,DELETEUSERROLE} = userRoleRoutes
 
 export const router = express.Router();
-const authorizationRoles = ['user','admin']
 
-router.get('/:UserId/roles',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
+
+router.get(GETUSERROLES,authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     try {
         
         const {params:{UserId}} = req;
@@ -22,7 +23,7 @@ router.get('/:UserId/roles',authenticateJwtToken,getAuthorize,async(req,res,next
     }
 })
 
-router.post('/:userId/roles/:roleId',authenticateJwtToken,postAuthorize,async(req,res,next)=>{
+router.post(ADDUSERROLE,authenticateJwtToken,postAuthorize,async(req,res,next)=>{
     try {
         const {
             params: { userId, roleId },
@@ -37,7 +38,7 @@ router.post('/:userId/roles/:roleId',authenticateJwtToken,postAuthorize,async(re
 }
 )
 
-router.delete('/:userId/roles/:roleId',authenticateJwtToken,deleteAuthorize,async(req,res,next)=>{
+router.delete(DELETEUSERROLE,authenticateJwtToken,deleteAuthorize,async(req,res,next)=>{
     try{
     const {
         params: { userId, roleId },

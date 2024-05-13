@@ -1,12 +1,14 @@
-import { verifyToken } from "../common/utils.js";
 import permissionForRoles from "../App/services/permissionForRoles.services.js";
 import { roleIdFromRole } from "../App/services/roles.services.js";
-
 import dotenv from "dotenv";
-import { messageHandler, responseHandler } from "../common/handlers.js";
+import { messageHandler } from "../common/handlers.js";
 import { errorStatusCodes } from "../constants/statusCodes.js";
 import { errorMessages } from "../constants/resMessages.js";
+import permissions from '../App/services/permissions.services.js'
+
 dotenv.config();
+
+const {getIdFromPermission} = permissions
 
 const { forbiddenMessage } = errorMessages;
 
@@ -27,6 +29,7 @@ const authorize = async (permissionId, role) => {
       throw new messageHandler(forbidden, forbiddenMessage);
     }
   } catch (error) {
+    console.log("error 1",error);
     throw error;
   }
 };
@@ -36,7 +39,8 @@ export const getAuthorize = async (req, res, next) => {
     const {
       locals: { role },
     } = res;
-    const result = await authorize(4, role);
+    const permissionId = await getIdFromPermission('view')
+    const result = await authorize(permissionId.result[0].Id, role);
     if (result) {
       next();
     }
@@ -45,45 +49,49 @@ export const getAuthorize = async (req, res, next) => {
   }
 };
 
-export const postAuthorize = (req, res, next) => {
+export const postAuthorize = async(req, res, next) => {
   try {
     const {
       locals: { role },
     } = res;
-    const result = authorize(1, role);
+    const permissionId = await getIdFromPermission('add')
+    const result = await authorize(permissionId.result[0].Id, role);
     if (result) {
       next();
     }
   } catch (error) {
-    throw error;
+    console.log("error 2",error);
+     next(error);
   }
 };
 
-export const editAuthorize = () => {
+export const editAuthorize = async(req, res, next) => {
   try {
     const {
       locals: { role },
     } = res;
-    const result = authorize(3, role);
+    const permissionId = await getIdFromPermission('edit')
+    const result = await authorize(permissionId.result[0].Id, role);
     if (result) {
       next();
     }
   } catch (error) {
-    throw error;
+    next(error);
   }
 };
 
-export const deleteAuthorize = () => {
+export const deleteAuthorize = async(req, res, next) => {
   try {
     const {
       locals: { role },
     } = res;
-    const result = authorize(2);
+    const permissionId = await getIdFromPermission('delete')
+    const result = await authorize(permissionId.result[0].Id, role);
     if (result) {
       next();
     }
   } catch (error) {
-    throw error;
+    next(error);
   }
 };
 

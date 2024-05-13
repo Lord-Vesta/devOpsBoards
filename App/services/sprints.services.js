@@ -119,7 +119,6 @@ const createSprintForUser = async (sprintName, startDate, endDate, boardId, user
 
 const checkBoardForThatUserExists = async (boardId, userId) => {
     try {
-        console.log(boardId,userId);
         const [rows] = await db.promise().query(`select * from boardTable where boardId=? and userId=? and isDeleted=false`, [boardId, userId]
         );
         

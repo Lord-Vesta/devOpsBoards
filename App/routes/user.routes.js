@@ -1,5 +1,5 @@
 import express from 'express';
-
+import { userRoutes } from '../../constants/routes.constants.js';
 import userControllers from '../controllers/user.controllers.js'
 import validators from '../validators/users.validator.js'
 import { responseHandler } from '../../common/handlers.js'
@@ -10,9 +10,11 @@ const {signupSchema,loginSchema} = validators
 
 const {ok} = successStatusCodes;
 
+const {SIGNUP,LOGIN} = userRoutes
+
 export const router = express.Router();
 
-router.post('/signup',validateBody(signupSchema), async (req,res,next)=>{
+router.post(SIGNUP,validateBody(signupSchema), async (req,res,next)=>{
     try {
         const {
             body: { emailId, password },
@@ -24,7 +26,7 @@ router.post('/signup',validateBody(signupSchema), async (req,res,next)=>{
     }
 }) 
 
-router.post('/login',validateBody(loginSchema),async(req,res,next)=>{
+router.post(LOGIN,validateBody(loginSchema),async(req,res,next)=>{
     try {
         const {
             body: { emailId, password },

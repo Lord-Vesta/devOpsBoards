@@ -11,7 +11,6 @@ const { ATTACHMENT_DELETED_SUCCESSFULLY,
 const addAttachments = async (file,taskId) => {
   try {
     const streamUpload = async(file) => {
-      console.log("inside stream upload");
       return new Promise((resolve, reject) => {
         let stream = cloudinary.uploader.upload_stream((error, result) => {
           if (result) {
@@ -33,6 +32,9 @@ const addAttachments = async (file,taskId) => {
       const addAttachmentResult = await attachmentsServices.addAttachments(taskId, Url);
       if(addAttachmentResult.result.affectedRows){
         return addAttachmentResult.result
+      }
+      else{
+        throw error;
       }
       
     }

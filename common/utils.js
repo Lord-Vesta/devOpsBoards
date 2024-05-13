@@ -12,7 +12,6 @@ const secretKey = process.env.secretKey
 
 export const passwordHashing = async(password)=>{
     const encPassword = await bcrypt.hash(password,10)
-    console.log(encPassword);
     return encPassword;
 }
 
@@ -47,7 +46,6 @@ export const validateBody=(schema)=>{
 
     return(req,res,next)=>{
         const {error} = schema.validate(req.body)
-        // console.log(error);
     if(error){
         throw new messageHandler(badRequest,error.details[0].message)
     }else{

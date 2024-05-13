@@ -17,7 +17,7 @@ const { board_fetched, conflict_message, unauthorized, board_created, board_upda
 export const listBoards = async (userId, role) => {
     try {
 
-        if (role === "admin") {
+        if (role === "admin" || role === 'editor') {
             const result = await getBoards();
 
             return result.result;
@@ -187,7 +187,6 @@ export const editBoard=async(requiredColumns,role,userId,boardId)=>{
 export const editBoardAdmin=async(requiredColumns,role,boardId)=>{
     try{
         const {assignedTo}=requiredColumns
-        console.log(requiredColumns);
         if(role==="admin"){
             if(requiredColumns.hasOwnProperty('assignedTo')){
                 

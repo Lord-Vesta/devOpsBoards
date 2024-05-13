@@ -4,15 +4,14 @@ import {messageHandler} from '../../common/handlers.js'
 
 const{unauthorizedMessage,conflictMessage} = errorMessages
 
-const {createdMessage,loginSuccessMessage} = successMessages
+const {createdMessage} = successMessages
 
 const {unauthorized,conflict} = errorStatusCodes
 
-const {ok,created} = successStatusCodes
+const {created} = successStatusCodes
 
 export const newMessage = {
-    conflict_message : new messageHandler(conflict,conflictMessage),
-    user_signup: new messageHandler(created, createdMessage),
-    login_successfull: new messageHandler(ok, loginSuccessMessage),
-    unauthorized: new messageHandler(unauthorized, unauthorizedMessage)
+    CONFLICTMESSAGE : new messageHandler(conflict,conflictMessage),
+    USERSIGNUP: new messageHandler(created, createdMessage),
+    UNAUTHORIZED: new messageHandler(unauthorized, unauthorizedMessage)
 }
