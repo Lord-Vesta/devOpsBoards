@@ -2,7 +2,6 @@ import bcrypt from 'bcryptjs';
 import jsonwebtoken from "jsonwebtoken";
 import dotenv from "dotenv";
 import { errorStatusCodes } from '../constants/statusCodes.js';
-import { responseHandler } from './handlers.js';
 import { messageHandler } from './handlers.js';
 dotenv.config();
 
@@ -47,10 +46,8 @@ export const verifyToken = (token)=>{
 export const validateBody=(schema)=>{
 
     return(req,res,next)=>{
-        // console.log(schema);
         const {error} = schema.validate(req.body)
     if(error){
-        // console.log(error.details[0].message);
         throw new messageHandler(badRequest,error.details[0].message)
     }else{
         next()

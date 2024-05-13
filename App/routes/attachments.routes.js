@@ -5,7 +5,7 @@ import { authenticateJwtToken } from '../../Middlewares/jwtAuthMiddleware.js';
 import { responseHandler } from '../../common/handlers.js';
 import { successStatusCodes } from '../../constants/statusCodes.js';
 import { attachmentMessages } from '../messages/attachment.messages.js';
-import rolesMiddleware, { deleteAuthorize, editAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
+import { deleteAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
 
 const {ok} = successStatusCodes
 
@@ -14,8 +14,6 @@ const {ATTACHMENT_ADDED_SUCCESSFULLY} = attachmentMessages
 const fileUpload = multer()
 
 export const router = express.Router();
-
-const authorizationRoles = ['user','admin']
 
 router.get('/:taskId/attachments',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     try {

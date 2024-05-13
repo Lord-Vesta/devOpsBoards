@@ -1,6 +1,6 @@
 import express from 'express';
 
-import userControllers from '../controllers/user.controller.js'
+import userControllers from '../controllers/user.controllers.js'
 import validators from '../validators/users.validator.js'
 import { responseHandler } from '../../common/handlers.js'
 import {successStatusCodes} from '../../constants/statusCodes.js'

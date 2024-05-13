@@ -2,7 +2,7 @@ import express from 'express';
 import rolesValidator from '../validators/roles.validator.js'
 import rolesRoutes from '../controllers/roles.controllers.js';
 import { authenticateJwtToken } from '../../Middlewares/jwtAuthMiddleware.js';
-import rolesMiddleware, { deleteAuthorize, editAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
+import { deleteAuthorize, editAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
 import{successStatusCodes} from '../../constants/statusCodes.js'
 import { responseHandler } from '../../common/handlers.js';
 import { validateBody } from '../../common/utils.js';
@@ -11,9 +11,6 @@ import { validateBody } from '../../common/utils.js';
 const {insertRolesSchema,updateRolesSchema} = rolesValidator
 
 const {ok} = successStatusCodes
-
-const authorizationRoles = ['user','admin',]
-
 
 export const roleRouter = express.Router();
 
