@@ -6,16 +6,17 @@ import { responseHandler } from '../../common/handlers.js';
 import { successStatusCodes } from '../../constants/statusCodes.js';
 import { attachmentMessages } from '../messages/attachment.messages.js';
 import { deleteAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
+import { attachmentRoutes } from '../../constants/routes.constants.js';
 
 const {ok} = successStatusCodes
-
+const {GETALLATTACHMENTS,GETSPECIFICATTACHMENTS,ADDATTACHMENT,DELETEATTACHMENT} = attachmentRoutes
 const {ATTACHMENT_ADDED_SUCCESSFULLY} = attachmentMessages
 
 const fileUpload = multer()
 
 export const router = express.Router();
 
-router.get('/:taskId/attachments',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
+router.get(GETALLATTACHMENTS,authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     try {
         const {params:{taskId}} = req;
         const listAttachmentsResponse = await attachmentsControllers.getAttachments(taskId)
@@ -26,7 +27,7 @@ router.get('/:taskId/attachments',authenticateJwtToken,getAuthorize,async(req,re
 }
 )
 
-router.get('/:taskId/attachments/:attachmentId',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
+router.get(GETSPECIFICATTACHMENTS,authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     try {
         const{params:{taskId,attachmentId}} = req;
         const listSpecificAttachmentResponse = await attachmentsControllers.getSpecificAttachments(taskId,attachmentId);
@@ -38,7 +39,7 @@ router.get('/:taskId/attachments/:attachmentId',authenticateJwtToken,getAuthoriz
 }
 )
 
-router.post("/:taskId/attachments", fileUpload.single("file"),authenticateJwtToken,postAuthorize,
+router.post(ADDATTACHMENT, fileUpload.single("file"),authenticateJwtToken,postAuthorize,
 async(req,res,next)=>{
     try {
         const {params:{taskId}} = req
@@ -53,7 +54,7 @@ async(req,res,next)=>{
 }
  );
 
-router.delete("/:taskId/attachments/:attachmentId",authenticateJwtToken,deleteAuthorize,async(req,res,next)=>{
+router.delete(DELETEATTACHMENT,authenticateJwtToken,deleteAuthorize,async(req,res,next)=>{
     try {
         const {params:{taskId,attachmentId}} = req;
         const deletedAttachmentResponse = await attachmentsControllers.deleteAttachments(taskId,attachmentId);

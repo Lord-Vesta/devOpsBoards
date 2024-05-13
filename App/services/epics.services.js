@@ -117,7 +117,6 @@ const createEpicForUserFromAdmin=async(sprintId, epicName, assignedTo, descripti
        
         if(EpicResult.affectedRows){
             const epicId=EpicResult.insertId;
-
             const [result]=await db.promise().query(`insert into epicUser(epicId,userId,isDeleted) values(?,?,?)`,[epicId,userId,false]
             
         );
@@ -136,7 +135,6 @@ const createEpicForUserFromAdmin=async(sprintId, epicName, assignedTo, descripti
 
 const getUserEmail=async(userId)=>{
     try{
-
         const email=await db.promise().query(`select emailID from userTable where Id=?`,[userId])
         console.log(email);
         return {result:email}   
@@ -163,12 +161,10 @@ const createEpicForUser=async(epicName,email,description,startDate,targetDate,st
 
         const[EpicResult]=await db.promise().query(`insert into epic set ?`,newEpic);
         if(EpicResult.affectedRows){
-
             const epicId=EpicResult.insertId;
             const [result]=await db.promise().query(`insert into epicUser(epicId,userId,isDeleted) values(?,?,?)`,[epicId,userId,false]
             
         );
-
         if(result.affectedRows){
             return {error:null,Mainresult:EpicResult,result};
         }

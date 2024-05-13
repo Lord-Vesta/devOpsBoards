@@ -5,7 +5,6 @@ const { ROLE_OF_USER_DELETED_SUCCESSFULLY,ROLE_OF_USER_ALREADY_EXISTS,ROLE_OF_US
 const getRolesOfUser = async (UserId) => {
   try {   
     const rolesOfUsers = await UserRoles.getRolesOfUser(UserId);
-    console.log(rolesOfUsers);
     return rolesOfUsers.result;
   } catch (error) {
     console.log(error);
@@ -16,7 +15,6 @@ const getRolesOfUser = async (UserId) => {
 const addRolesToUsers = async (userId, roleId) => {
   try {
     const rolesOfUser = await UserRoles.getSpecificRoleOfUser(userId,roleId)
-    console.log(rolesOfUser.result.length);
     if(rolesOfUser.result.length){
       throw ROLE_OF_USER_ALREADY_EXISTS;
     }

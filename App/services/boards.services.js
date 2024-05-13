@@ -116,7 +116,6 @@ const createBoardByAdminDb=async(userId,title,assignedTo,state,type)=>{
 
 
 const createBoardForUser = async (userId, title, email, state, type) => {
-
     try {
        
         const newBoard = {
@@ -146,7 +145,7 @@ const createBoardForUser = async (userId, title, email, state, type) => {
 
        
     } catch (error) {
-        // console.error("Error creating board:", error);
+
         throw  error ;
     }
 };

@@ -4,16 +4,20 @@ import permissionContollers from '../controllers/permissions.controllers.js'
 import permissionValidator from '../validators/permissions.validator.js'
 import { responseHandler } from '../../common/handlers.js';
 import { successStatusCodes } from '../../constants/statusCodes.js';
-import rolesMiddleware, { deleteAuthorize, editAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
+import { deleteAuthorize, editAuthorize, getAuthorize, postAuthorize } from '../../Middlewares/roles.middleware.js';
 import {validateBody} from '../../common/utils.js'
+import { permissionRoutes } from '../../constants/routes.constants.js';
 
 
 const {ok} = successStatusCodes
-const authorizationRoles = ['user','admin']
 const {addPermissionSchema,editPermission} = permissionValidator
+const {GETALLPERMISSIONS,GETSPECIFICPERMISSION,ADDPERMISSION,DELETEPERMISSION,UPDATEPERMISSION} = permissionRoutes
+
 export const router = express.Router();
 
-router.get('/',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
+
+
+router.get(GETALLPERMISSIONS,authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     try {
         const listOfPermissions = await permissionContollers.listPermissions()
         res.status(ok).send(new responseHandler(listOfPermissions))
@@ -22,7 +26,7 @@ router.get('/',authenticateJwtToken,getAuthorize,async(req,res,next)=>{
     }
 });
 
-router.get('/:permissionId',getAuthorize,authenticateJwtToken,async(req,res,next)=>{ 
+router.get(GETSPECIFICPERMISSION,getAuthorize,authenticateJwtToken,async(req,res,next)=>{ 
     try {
         const {params:{permissionId}} = req
         const listOfSpeificPermissions = await permissionContollers.specificPermission(permissionId)
@@ -32,7 +36,7 @@ router.get('/:permissionId',getAuthorize,authenticateJwtToken,async(req,res,next
     }
 });
 
-router.post('/',authenticateJwtToken,postAuthorize,validateBody(addPermissionSchema),async(req,res,next)=>{
+router.post(ADDPERMISSION,authenticateJwtToken,postAuthorize,validateBody(addPermissionSchema),async(req,res,next)=>{
     try {
         const {body:{permission}} = req;
         const permissionAddedResponse = await permissionContollers.addPermission(permission)
@@ -42,7 +46,7 @@ router.post('/',authenticateJwtToken,postAuthorize,validateBody(addPermissionSch
     }
 })
 
-router.put('/:permissionId',authenticateJwtToken,editAuthorize,validateBody(editPermission),async(req,res,next)=>{
+router.put(UPDATEPERMISSION,authenticateJwtToken,editAuthorize,validateBody(editPermission),async(req,res,next)=>{
     try {
         const {
             params: { permissionId },
@@ -56,7 +60,7 @@ router.put('/:permissionId',authenticateJwtToken,editAuthorize,validateBody(edit
 }
 )
 
-router.delete('/:permissionId',authenticateJwtToken,deleteAuthorize,async(req,res,next)=>{
+router.delete(DELETEPERMISSION,authenticateJwtToken,deleteAuthorize,async(req,res,next)=>{
     try {
         const {
             params: { permissionId },

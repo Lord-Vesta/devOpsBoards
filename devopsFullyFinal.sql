@@ -170,17 +170,3 @@ CREATE TABLE tasks (
 );
 
 
-select * from tasks
-
-
-
--- CREATE TABLE taskuser (
---     Id INT PRIMARY KEY AUTO_INCREMENT,
---     taskId INT NOT NULL,
---     userId INT NOT NULL,
---     FOREIGN KEY (taskId) REFERENCES tasks(taskId),
---     FOREIGN KEY (userId) REFERENCES userTable(Id),
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
--- );
-
