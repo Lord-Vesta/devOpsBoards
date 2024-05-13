@@ -49,6 +49,7 @@ export const validateBody=(schema)=>{
     return(req,res,next)=>{
         // console.log(schema);
         const {error} = schema.validate(req.body)
+        // console.log(error);
     if(error){
         // console.log(error.details[0].message);
         throw new messageHandler(badRequest,error.details[0].message)

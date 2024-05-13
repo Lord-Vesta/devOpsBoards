@@ -34,14 +34,18 @@ create Table Permission (
     isdeleted bool
 );
 
+  
+
 create table permissionForRoles(
-	Id int primary key,
+	Id int primary key auto_increment,
     RoleId int,
     permissionId int,
     isdeleted bool,
     FOREIGN KEY (RoleId) REFERENCES Roles(Id),
     FOREIGN KEY (permissionId) REFERENCES Permission(Id)
 );
+
+
 
 CREATE TABLE BoardTable (
     boardId INT PRIMARY KEY AUTO_INCREMENT,
@@ -54,8 +58,6 @@ CREATE TABLE BoardTable (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
-select * from boardTable
 
 CREATE TABLE boarduser (
     Id INT PRIMARY KEY AUTO_INCREMENT,
@@ -85,6 +87,7 @@ CREATE TABLE sprintuser (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     sprintId INT NOT NULL,
     userId INT NOT NULL,
+    isDeleted boolean,
     FOREIGN KEY (sprintId) REFERENCES sprint(sprintId),
     FOREIGN KEY (userId) REFERENCES userTable(Id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -94,17 +97,17 @@ CREATE TABLE sprintuser (
 
 CREATE TABLE epic (
     epicId INT PRIMARY KEY AUTO_INCREMENT,
-    boardId INT NOT NULL,
+    sprintId INT NOT NULL,
     epicName VARCHAR(255) NOT NULL,
-    assignedTo varchar(255),
+    assignedTo VARCHAR(255),
     description TEXT,
     startDate DATE,
     targetDate DATE,
     state ENUM('To Do', 'In Progress', 'Done'),
-    isDeleted boolean,
+    isDeleted BOOLEAN,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (boardId) REFERENCES boardTable(boardId)
+    foreign key (sprintId) references sprint(sprintId)
 );
 
 
@@ -112,12 +115,12 @@ CREATE TABLE epicuser (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     epicId INT NOT NULL,
     userId INT NOT NULL,
+    isDeleted boolean,
     FOREIGN KEY (epicId) REFERENCES epic(epicId),
     FOREIGN KEY (userId) REFERENCES userTable(Id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
 
 
 CREATE TABLE userstories (
@@ -135,6 +138,7 @@ CREATE TABLE userstories (
 );
 
 
+
 CREATE TABLE userstoryusers (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     userStoryId INT NOT NULL,
@@ -145,6 +149,8 @@ CREATE TABLE userstoryusers (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+
 
 CREATE TABLE tasks (
     taskId INT PRIMARY KEY AUTO_INCREMENT,
@@ -161,7 +167,6 @@ CREATE TABLE tasks (
     FOREIGN KEY (userStoryId) REFERENCES userStories(userStoryId)
 );
 
-
 CREATE TABLE taskuser (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     taskId INT NOT NULL,
@@ -171,5 +176,4 @@ CREATE TABLE taskuser (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
 
