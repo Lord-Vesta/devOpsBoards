@@ -11,6 +11,7 @@ const { ATTACHMENT_DELETED_SUCCESSFULLY,
 
 const addAttachments = async (file,taskId) => {
   try {
+    console.log(taskId);
     const streamUpload = async(file) => {
       console.log("inside stream upload");
       return new Promise((resolve, reject) => {
