@@ -136,7 +136,7 @@ const createEpicForUserFromAdmin=async(sprintId, epicName, assignedTo, descripti
 const getUserEmail=async(userId)=>{
     try{
         const email=await db.promise().query(`select emailID from userTable where Id=?`,[userId])
-       
+        console.log(email);
         return {result:email}   
     }catch(error){
         throw error

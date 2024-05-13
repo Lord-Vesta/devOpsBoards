@@ -155,6 +155,7 @@ CREATE TABLE userstoryusers (
 CREATE TABLE tasks (
     taskId INT PRIMARY KEY AUTO_INCREMENT,
     userStoryId INT NOT NULL,
+    userId int not null,
     taskName VARCHAR(255) NOT NULL,
     description TEXT,
     state ENUM('To Do', 'In Progress', 'Done'),
@@ -164,7 +165,8 @@ CREATE TABLE tasks (
     comments varchar(255),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (userStoryId) REFERENCES userStories(userStoryId)
+    FOREIGN KEY (userStoryId) REFERENCES userStories(userStoryId),
+    foreign key (userId) references userTable(Id)
 );
 
 

@@ -11,9 +11,6 @@ import { boardsMessages } from "../messages/boards.messages.js";
 const { board_fetched, conflict_message, unauthorized, board_created, board_updated, board_deleted, access_forbidden, bad_request, not_found, user_added_to_existing_board,board_not_found } = boardsMessages
 
 
-
-
-
 export const listBoards = async (userId, role) => {
     try {
 
@@ -121,10 +118,6 @@ export const createBoardByAdmin=async(role,createBoardBody)=>{
 }
 
 
-
-//-----------------------------------Post over----------------------------------
-//------------------------------------Put started-------------------------------
-
 export const addAuserToAExistingBoard = async (role,userId,boardId) => {
    
     try {
@@ -218,7 +211,6 @@ export const editBoardAdmin=async(requiredColumns,role,boardId)=>{
         throw error;
     }
 }
-
 
 
 export const deleteBoard = async (userId, role, boardId) => {

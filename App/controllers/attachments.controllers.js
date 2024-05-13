@@ -10,6 +10,7 @@ const { ATTACHMENT_DELETED_SUCCESSFULLY,
   
 const addAttachments = async (file,taskId) => {
   try {
+    console.log(taskId);
     const streamUpload = async(file) => {
       return new Promise((resolve, reject) => {
         let stream = cloudinary.uploader.upload_stream((error, result) => {

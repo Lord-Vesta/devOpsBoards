@@ -65,10 +65,6 @@ export const createSprint=async(createSprintBody,userId,boardId)=>{
     try{
         const {sprintName,startDate,endDate}=createSprintBody
 
-        // if(!sprintName && !startDate&& !endDate){
-        //     throw bad_request;
-        // }
-
       const ifBoardExists= await checkBoardForThatUserExists(boardId,userId)
 
 
@@ -191,7 +187,7 @@ export const deleteSprint = async (role,userId,boardId,sprintId)=>{
           
 
             if(ifSprintExists.result.length){
-
+            
                 await deleteSprintDb(boardId,sprintId,userId);
                 return sprint_deleted;  
             }
