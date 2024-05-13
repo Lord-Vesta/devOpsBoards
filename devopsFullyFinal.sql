@@ -13,6 +13,8 @@ create table roles (
     isdeleted bool
 );
 
+
+
 insert into Roles (Role,isDeleted) values ("user",false);
 
 
@@ -32,14 +34,18 @@ create Table Permission (
     isdeleted bool
 );
 
+  
+
 create table permissionForRoles(
-	Id int primary key,
+	Id int primary key auto_increment,
     RoleId int,
     permissionId int,
     isdeleted bool,
     FOREIGN KEY (RoleId) REFERENCES Roles(Id),
     FOREIGN KEY (permissionId) REFERENCES Permission(Id)
 );
+
+
 
 CREATE TABLE BoardTable (
     boardId INT PRIMARY KEY AUTO_INCREMENT,
@@ -53,7 +59,6 @@ CREATE TABLE BoardTable (
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-
 CREATE TABLE boarduser (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     boardId INT NOT NULL,
@@ -63,7 +68,6 @@ CREATE TABLE boarduser (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
 
 CREATE TABLE sprint (
     sprintId INT PRIMARY KEY AUTO_INCREMENT,
@@ -77,10 +81,13 @@ CREATE TABLE sprint (
     FOREIGN KEY (boardId) REFERENCES BoardTable(boardId)
 );
 
+
+
 CREATE TABLE sprintuser (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     sprintId INT NOT NULL,
     userId INT NOT NULL,
+    isDeleted boolean,
     FOREIGN KEY (sprintId) REFERENCES sprint(sprintId),
     FOREIGN KEY (userId) REFERENCES userTable(Id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -88,7 +95,6 @@ CREATE TABLE sprintuser (
 );
 
 
-select * from boardTable where boardId=83
 CREATE TABLE epic (
     epicId INT PRIMARY KEY AUTO_INCREMENT,
     sprintId INT NOT NULL,
@@ -104,15 +110,18 @@ CREATE TABLE epic (
     foreign key (sprintId) references sprint(sprintId)
 );
 
+
 CREATE TABLE epicuser (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     epicId INT NOT NULL,
     userId INT NOT NULL,
+    isDeleted boolean,
     FOREIGN KEY (epicId) REFERENCES epic(epicId),
     FOREIGN KEY (userId) REFERENCES userTable(Id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
 
 CREATE TABLE userstories (
     userStoryId INT PRIMARY KEY AUTO_INCREMENT,
@@ -128,6 +137,8 @@ CREATE TABLE userstories (
     FOREIGN KEY (epicId) REFERENCES epic(epicId)
 );
 
+
+
 CREATE TABLE userstoryusers (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     userStoryId INT NOT NULL,
@@ -138,6 +149,8 @@ CREATE TABLE userstoryusers (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+
 
 CREATE TABLE tasks (
     taskId INT PRIMARY KEY AUTO_INCREMENT,
@@ -163,3 +176,4 @@ CREATE TABLE taskuser (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+

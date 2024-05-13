@@ -10,7 +10,9 @@ import{router as rolePermissions} from './routes/permissionForRoles.routes.js'
 import {router as boardsRoutes} from "./routes/boards.routes.js";
 import {router as sprintRoutes} from "./routes/sprint.routes.js";
 import {router as epicRoutes} from "./routes/epics.routes.js"
-import { responseHandler } from "../common/handlers.js";import { responseHandler } from "../common/handlers.js";
+
+import {router as UserStoryRoutes} from './routes/userStory.routes.js'
+import { responseHandler } from "../common/handlers.js";
 
 
 
@@ -30,7 +32,8 @@ const routes = [
     { path: '/api/rolePermissions', router: rolePermissions },
     { path: '/api/board',router: boardsRoutes},
     {path:'/api/board/sprint',router:sprintRoutes},
-    {path:'/api/board/epic',router:epicRoutes}
+    {path:'/api/board/epic',router:epicRoutes},
+    {path:'/api/board/userStory',router:UserStoryRoutes}
   ];
   
 routes.forEach(route => {

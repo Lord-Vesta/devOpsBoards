@@ -185,13 +185,13 @@ export const deleteSprint = async (role,userId,boardId,sprintId)=>{
             
         }
         else if(role==="user"){
-            // console.log("Inside user");
+
 
             const ifSprintExists=await checkSprintExists(sprintId,userId);
           
-            // console.log(ifSprintExists.result);
+
             if(ifSprintExists.result.length){
-                // console.log("Inside delete");
+
                 await deleteSprintDb(boardId,sprintId,userId);
                 return sprint_deleted;  
             }

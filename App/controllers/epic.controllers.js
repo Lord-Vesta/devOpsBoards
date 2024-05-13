@@ -165,7 +165,7 @@ export const deleteEpic = async (role, userId, epicId) => {
         if (role === "admin") {
             const ifEpicExists = await checkEpicExistsAdmin(epicId)
             if (ifEpicExists.result.length) {
-                await deleteEpicDb(epicId)
+                await deleteEpicUser(epicId)
                 return epic_deleted;
             } else {
                 throw epic_not_found

@@ -20,7 +20,8 @@ export const successMessages = {
     "updatedMessage": "Resource updated successfully.",
     "deletedMessage": "Resource deleted successfully.",
     "userAddedToABoard":"User added to the board.",
-    "userAddedToExistingSprint":"User added to existing sprint."
+    "userAddedToExistingSprint":"User added to existing sprint.",
+    "userAddedToExistingUserStory":"User added to existing user story"
 }
 
 

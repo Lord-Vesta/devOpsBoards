@@ -1,13 +1,16 @@
 
 
-import { checkUserExists } from '../services/epics.services.js';
-import {listAlluserStory,listUsersUstory,getMembersOfSpecificUserStoryDb,getMemberSpecificUS,ifEpicExistsForThatUser,checkUserStoryExistsAdmin,addAuserToAExistingUserStoryDb,createUserStoryDb} from '../services/userStories.services.js'
+
+import {listAlluserStory,listUsersUstory,getMembersOfSpecificUserStoryDb,getMemberSpecificUS,ifEpicExistsForThatUser,checkUserStoryExistsAdmin,addAuserToAExistingUserStoryDb,createUserStoryDb,editUserStoryUser,checkUserStoryExists,checkUserExists,createUserStoryByAdminDb,deleteuserStoryUser} from '../services/userStories.services.js'
 
 
 
+// const { conflict_message, user_story_created, epic_updated, epic_deleted, unauthorized, epic_fetched, not_found, access_forbidden, bad_request, no_content, epic_not_found,sprint_not_found } = epicMessages
 
+import { userStoryMessages } from '../messages/userStories.message.js';
+const {user_story_created,unauthorized,user_added_to_user_story,access_forbidden,not_found,user_story_updated,user_story_deleted}=userStoryMessages
 
-export const listAllUserStories=async(userId,role,userstoryId)=>{
+export const listAllUserStories=async(userId,role,epicId)=>{
     try{
         if(role==="admin"){
             const result=await listAlluserStory();
@@ -27,8 +30,14 @@ export const getUserStoriesSpecificMembers=async(role,userId,userstoryId)=>{
             const result=await getMembersOfSpecificUserStoryDb(userstoryId)
             return result.result;
         }else if(role==="user"){
-            const result=await getMemberSpecificUS(userstoryId,userId)
-            return result.result
+            const check=await checkUserStoryExists(userstoryId,userId)
+            if(check.result.length){
+                const result=await getMemberSpecificUS(userstoryId,userId)
+                return result.result
+            }else{
+                throw access_forbidden
+            }
+           
         }
     }catch(error){
         throw error
@@ -55,6 +64,7 @@ export const createUserStory=async(createUserStoryBody,epicId,userId)=>{
 export const addAuserToAExistingUserStory=async(role,userId,userstoryId)=>{
     try{
         if(role==="admin"){
+            
             const check=await checkUserStoryExistsAdmin(userstoryId);
             if(check.result.length){
                 await addAuserToAExistingUserStoryDb(userId,userstoryId)
@@ -63,21 +73,22 @@ export const addAuserToAExistingUserStory=async(role,userId,userstoryId)=>{
                 throw access_forbidden
             }
         }
-    }catch(erorr){
+    }catch(error){
         throw error
     }
     
 }
 
 
-export const createUserStoryByAdmin=async(role,createUserStoryBody,epicId)=>{
+export const createUserStoryByAdmin=async(role,userId,createUserStoryBody,epicId)=>{
     try{
         const {userStoryName,description,state,priority,estimateHours}=createUserStoryBody
 
         if(role==="admin"){
-            const ifUserExists=await checkUserExists(Id,epicId);
+            const ifUserExists=await checkUserExists(userId,epicId);
+            
             if(ifUserExists.result.length){
-                await createUserStoryByAdminDb(Id,epicId,userStoryName,description,state,priority,estimateHours)
+                await createUserStoryByAdminDb(userId,epicId,userStoryName,description,state,priority,estimateHours)
                 return user_story_created
             }else{
                 throw not_found
@@ -91,19 +102,55 @@ export const createUserStoryByAdmin=async(role,createUserStoryBody,epicId)=>{
 }
 
 
-export const editUserStory=async(role,requiredColumns,userstoryId)=>{
+export const editUserStory=async(role,requiredColumns,userstoryId,userId)=>{
     try{
         if(role==="admin"){
-            const ifUserStoryExists=checkUserStoryExistsAdmin(userstoryId);
-            if(ifEpicExists.result.length){
-                await editUserStoryDb(requiredColumns,userstoryId);
+            const ifUserStoryExists=await checkUserStoryExistsAdmin(userstoryId);
+          
+            if(ifUserStoryExists.result.length){
+                
+                await editUserStoryUser(requiredColumns,userstoryId);
 
                 return user_story_updated
 
             }else{
                 throw not_found
             }
-        }else if(role)
+        }else if(role==="user"){
+            const ifUserStoryExists=await checkUserStoryExists(userstoryId,userId);
+
+            if(ifUserStoryExists.result.length){
+                await editUserStoryUser(requiredColumns,userstoryId,userId)
+                return user_story_updated
+            }
+            else{
+                throw not_found
+            }
+        }
+    }catch(error){
+        throw error
+    }
+}
+
+
+export const deleteuserStory=async(role,userId,userstoryId)=>{
+    try{
+        if(role==="admin"){
+            const ifUserStoryExists=await checkUserStoryExistsAdmin(userstoryId);
+            if(ifUserStoryExists.result.length){
+                await deleteuserStoryUser(userstoryId);
+                return user_story_deleted
+
+            }else{
+                throw not_found
+            }
+        }else if(role==="user"){
+            const ifUserStoryExists=await checkUserStoryExists(userstoryId,userId)
+            if(ifUserStoryExists.result.length){
+                await deleteuserStoryUser(userstoryId)
+                return user_story_deleted
+            }
+        }
     }catch(error){
         throw error
     }
