@@ -16,7 +16,6 @@ const checkAlreadyPresent = async (emailId) => {
 };
 
 const login = async (emailId) => {
-
   try {
     const [result] = await db.promise().query(
       `SELECT u.emailID,u.password, u.Id,u.isDeleted, r.Role
@@ -41,7 +40,6 @@ const signup = async (emailId, password) => {
         `insert into UserTable (emailID,password,isDeleted) values (?,?,?)`,
         [emailId, password, false]
       );
-      console.log("This is userResult",userResult);
     if (userResult.affectedRows) {
       
       const userId = userResult.insertId;

@@ -44,12 +44,24 @@ const searchBypermissions = async (permission) => {
   try {
     const [result] = await db
       .promise()
-      .query(`select * from permissions where permission = ?`, [permission]);
+      .query(`select * from permissions where permission = ? and isDeleted = false`, [permission]);
     return { error: null, result: result };
   } catch (error) {
     throw error;
   }
 };
+
+const getIdFromPermission = async(permissionName)=>{
+  try {
+    const [result] = await db.promise().query(`SELECT Id
+    FROM Permissions
+    WHERE permission LIKE '%${permissionName}%' and isDeleted = false;`)
+    return{error:null, result:result}
+  } catch (error) {
+    throw error;
+  }
+
+}
 
 const editPermission = async (Id, permission) => {
   try {
@@ -99,4 +111,5 @@ export default {
   searchBypermissions,
   editPermission,
   deletePermission,
+  getIdFromPermission
 };

@@ -46,7 +46,6 @@ const getMembersOfSpecificUserStoryDb = async (userstoryId) => {
 
 const getMemberSpecificUS = async (userstoryId, userId) => {
     try {
-
         const [rows] = await db.promise().query
             (`SELECT userTable.Id AS userId, userTable.emailId
             FROM userTable
@@ -154,7 +153,6 @@ const checkUserStoryExists=async(userStoryId,userId)=>{
 
 const checkUserExists=async(userId,epicId)=>{
     try{
-
         const [rows]=await db.promise().query(`select * from epicuser where userId=? and epicId=?`,[userId,epicId])
         return {result:rows}
     }catch(error){

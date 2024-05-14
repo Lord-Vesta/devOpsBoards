@@ -1,7 +1,5 @@
 import multer from 'multer';
 
-console.log("inside middleware");
-
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, '../uploads/');

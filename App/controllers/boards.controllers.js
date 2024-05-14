@@ -14,7 +14,7 @@ const { board_fetched, conflict_message, unauthorized, board_created, board_upda
 export const listBoards = async (userId, role) => {
     try {
 
-        if (role === "admin") {
+        if (role === "admin" || role === 'editor') {
             const result = await getBoards();
 
             return result.result;
