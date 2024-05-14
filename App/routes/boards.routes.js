@@ -1,16 +1,14 @@
 import express from "express";
 import { listBoards,adminSpecificBoard,createBoard,addAuserToAExistingBoard,deleteBoard,createBoardByAdmin, editBoard,getMembersofSpecificBoard,editBoardAdmin } from "../controllers/boards.controllers.js";
-
 import { authenticateJwtToken } from "../../Middlewares/jwtAuthMiddleware.js";
-
 export const router = express.Router();
-
 import {successStatusCodes} from '../../constants/statusCodes.js'
-
-
 import { responseHandler } from "../../common/handlers.js";
 import validators from '../validators/boards.validators.js';
 import {validateBody} from '../../common/utils.js';
+import { boardRoutes } from "../../constants/routes.constants.js";
+
+const {GETBOARDS,GETSPECIFICBOARD,GETBOARDMEMBERS,ADDBOARDBYADMIN,ADDBOARDBYUSER,ADDUSERTOBOARD,UPDATEBOARDADMIN,UPDATEBOARDUSER,DELETEBOARD} = boardRoutes
 
 
 const {createBoardSchema,editBoardSchema}=validators;
@@ -18,7 +16,7 @@ const {createBoardSchema,editBoardSchema}=validators;
 
 const {ok} = successStatusCodes
 
-router.get('/getBoards',authenticateJwtToken,async(req,res,next)=>{
+router.get(GETBOARDS,authenticateJwtToken,async(req,res,next)=>{
     try {
         const {locals:{userId,role}}=res
         const result = await listBoards(userId,role)
@@ -29,7 +27,7 @@ router.get('/getBoards',authenticateJwtToken,async(req,res,next)=>{
     }
 });
         
-router.get('/:boardId',authenticateJwtToken,async (req,res,next)=>{
+router.get(GETSPECIFICBOARD,authenticateJwtToken,async (req,res,next)=>{
     try{
         const{locals:{role}}=res;
         const{params:{boardId}}=req;
@@ -42,7 +40,7 @@ router.get('/:boardId',authenticateJwtToken,async (req,res,next)=>{
     }
 });
 
-router.get('/getMemberSpecificBoard/boardId/:boardId',authenticateJwtToken,async(req,res,next)=>{
+router.get(GETBOARDMEMBERS,authenticateJwtToken,async(req,res,next)=>{
     try{
         const {locals:{userId,role}}=res;
         const {params:{boardId}}=req;
@@ -54,7 +52,7 @@ router.get('/getMemberSpecificBoard/boardId/:boardId',authenticateJwtToken,async
 });
 
 
-router.post('/createBoardByAdmin/',validateBody(createBoardSchema),authenticateJwtToken,async(req,res,next)=>{
+router.post(ADDBOARDBYADMIN,validateBody(createBoardSchema),authenticateJwtToken,async(req,res,next)=>{
     try{
     const {body:createBoardBody} = req;
     
@@ -69,7 +67,7 @@ catch(error){
 });
 
 
-router.post('/createBoard',validateBody(createBoardSchema),authenticateJwtToken,async (req,res,next)=>{
+router.post(ADDBOARDBYUSER,validateBody(createBoardSchema),authenticateJwtToken,async (req,res,next)=>{
     try{
         const {body:createBoardBody} = req
         
@@ -84,7 +82,7 @@ router.post('/createBoard',validateBody(createBoardSchema),authenticateJwtToken,
 
 
 
-router.post('/adduserToExistingBoard/:userId/:boardId',authenticateJwtToken,async(req,res,next)=>{
+router.post(ADDUSERTOBOARD,authenticateJwtToken,async(req,res,next)=>{
     try{
         
         const {locals:{role}}=res;
@@ -101,7 +99,7 @@ router.post('/adduserToExistingBoard/:userId/:boardId',authenticateJwtToken,asyn
     }
 });
 
-router.put('/updateBoard/:boardId',validateBody(editBoardSchema),authenticateJwtToken,async(req,res,next)=>{
+router.put(UPDATEBOARDUSER,validateBody(editBoardSchema),authenticateJwtToken,async(req,res,next)=>{
     try{
         let {body:requiredColumns}=req;
         const{locals:{role,userId}}=res;
@@ -114,7 +112,7 @@ router.put('/updateBoard/:boardId',validateBody(editBoardSchema),authenticateJwt
 })
 
 
-router.put('/updateBoardAdmin/:boardId',validateBody(editBoardSchema),authenticateJwtToken,async(req,res,next)=>{
+router.put(UPDATEBOARDADMIN,validateBody(editBoardSchema),authenticateJwtToken,async(req,res,next)=>{
     try{
         let {body:requiredColumns}=req;
         const{locals:{role}}=res;
@@ -127,7 +125,7 @@ router.put('/updateBoardAdmin/:boardId',validateBody(editBoardSchema),authentica
 })
 
 
-router.delete('/:boardId',authenticateJwtToken,async(req,res,next)=>{
+router.delete(DELETEBOARD,authenticateJwtToken,async(req,res,next)=>{
     try{
     const{locals:{userId,role}}=res;
   

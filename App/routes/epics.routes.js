@@ -1,24 +1,22 @@
 import express from "express";
 import { listAllEpics,createEpic,createEpicByAdminForUser,updateEpic,updateEpicAdmin,deleteEpic,getEpicSpecificMembers } from "../controllers/epic.controllers.js";
 import { authenticateJwtToken } from "../../Middlewares/jwtAuthMiddleware.js";
-
-export const router = express.Router();
-
-
-
 import { responseHandler } from "../../common/handlers.js";
-
-
 import {successStatusCodes} from '../../constants/statusCodes.js'
 import validators from '../validators/epics.validators.js';
 import {validateBody} from '../../common/utils.js';
+import { epicsRoutes } from "../../constants/routes.constants.js";
+
+export const router = express.Router();
 
 const {createEpicSchema,editEpicSchema}=validators
 const {ok} = successStatusCodes
 
+const {GETEPICS,GETEPICMEMBERS,ADDSPRINTBYADMIN,ADDSPRINTBYUSER,UPDATEEPICADMIN,UPDATEEPICUSER,DELETEEPIC} = epicsRoutes
 
 
-router.get('/sprintId/:sprintId',authenticateJwtToken,async(req,res,next)=>{
+
+router.get(GETEPICS,authenticateJwtToken,async(req,res,next)=>{
     try{
 
         const {locals:{userId,role}}=res;
@@ -34,7 +32,7 @@ router.get('/sprintId/:sprintId',authenticateJwtToken,async(req,res,next)=>{
 });
 
 
-router.get('/getMembersOfSpecificEpic/:epicId',authenticateJwtToken,async(req,res,next)=>{
+router.get(GETEPICMEMBERS,authenticateJwtToken,async(req,res,next)=>{
     try{
         const {locals:{role,userId}}=res;
         const  {params:{epicId}}=req;
@@ -46,7 +44,7 @@ router.get('/getMembersOfSpecificEpic/:epicId',authenticateJwtToken,async(req,re
 })
 
 
-router.post('/createEpic/sprintId/:sprintId',validateBody(createEpicSchema),authenticateJwtToken,async(req,res,next)=>{
+router.post(ADDSPRINTBYUSER,validateBody(createEpicSchema),authenticateJwtToken,async(req,res,next)=>{
     try{
       
         const {body:createEpicBody}=req;
@@ -62,7 +60,7 @@ router.post('/createEpic/sprintId/:sprintId',validateBody(createEpicSchema),auth
 });
 
 
-router.post('/createEpicForUserByAdmin/sprintId/:sprintId',validateBody(createEpicSchema),authenticateJwtToken,async(req,res,next)=>{
+router.post(ADDSPRINTBYADMIN,validateBody(createEpicSchema),authenticateJwtToken,async(req,res,next)=>{
     try{
         
         const {locals:{role}}=res;
@@ -78,7 +76,7 @@ router.post('/createEpicForUserByAdmin/sprintId/:sprintId',validateBody(createEp
 });
 
 
-router.put('/updateEpic/:epicId',validateBody(editEpicSchema),authenticateJwtToken,async(req,res,next)=>{
+router.put(UPDATEEPICUSER,validateBody(editEpicSchema),authenticateJwtToken,async(req,res,next)=>{
     try{
         let{body:requiredColumns}=req;
         const{locals:{userId}}=res;
@@ -91,7 +89,7 @@ router.put('/updateEpic/:epicId',validateBody(editEpicSchema),authenticateJwtTok
 })
 
 
-router.put('/updateEpicAdmin/:epicId',validateBody(editEpicSchema),authenticateJwtToken,async(req,res,next)=>{
+router.put(UPDATEEPICADMIN,validateBody(editEpicSchema),authenticateJwtToken,async(req,res,next)=>{
     try{
         let{body:requiredColumns}=req;
         const{locals:{role}}=res;
@@ -103,7 +101,7 @@ router.put('/updateEpicAdmin/:epicId',validateBody(editEpicSchema),authenticateJ
     }
 })
 
-router.delete('/deleteEpic/:epicId',authenticateJwtToken,async(req,res,next)=>{
+router.delete(DELETEEPIC,authenticateJwtToken,async(req,res,next)=>{
     try{
         const {locals:{role,userId}}=res;
         const{params:{epicId}}=req;

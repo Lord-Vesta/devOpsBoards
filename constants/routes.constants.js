@@ -50,3 +50,27 @@ export const attachmentRoutes = {
     ADDATTACHMENT : "/:taskId/attachments",
     DELETEATTACHMENT : "/:taskId/attachments/:attachmentId"
 }
+
+export const boardRoutes = {
+    GETBOARDS : "/getBoards",
+    GETSPECIFICBOARD : "/:boardId",
+    GETBOARDMEMBERS : "/getMemberSpecificBoard/boardId/:boardId",
+    ADDBOARDBYADMIN: "/createBoardByAdmin",
+    ADDBOARDBYUSER : "/createBoard",
+    ADDUSERTOBOARD : "/adduserToExistingBoard/:userId/:boardId",
+    UPDATEBOARDUSER : "/updateBoard/:boardId",
+    UPDATEBOARDADMIN : "/updateBoardAdmin/:boardId",
+    DELETEBOARD : "/:boardId"
+}
+
+export const epicsRoutes = {
+    GETEPICS : '/sprintId/:sprintId',
+    GETEPICMEMBERS : '/getMembersOfSpecificEpic/:epicId',
+    ADDSPRINTBYUSER : '/createEpic/sprintId/:sprintId',
+    ADDSPRINTBYADMIN : '/createEpicForUserByAdmin/sprintId/:sprintId',
+    UPDATEEPICUSER : '/updateEpic/:epicId',
+    UPDATEEPICADMIN : '/updateEpicAdmin/:epicId',
+    DELETEEPIC : '/deleteEpic/:epicId'
+
+
+}
